@@ -6,6 +6,12 @@
 
 本项目的数据处理链独立构建：使用另行提供的 119 章 EPUB 转换文本、自己的词典和规则抽取流程、His-Geo 地理编码适配及本地 GIS 分析。参考项目中人工整理的事件、时间、坐标、人物行踪、图片、历史对照和边界数据未导入本项目。Leaflet 1.9.4 发行文件另依 BSD-2-Clause 许可使用，来源与版权声明见 `frontend/assets/vendor/ASSET_ORIGIN.md` 和 `frontend/assets/vendor/leaflet-LICENSE.txt`。
 
+## 沉浸式前端参考
+
+感谢 Bilawal Sidhu 开源 [God’s Eye View](https://github.com/bilawalsidhu/gods-eye-view)。本项目参考其全幅地图、悬浮场景与上下文面板、底部控制舱、主题预设、快速检索和移动端面板组织方式，对三国时空前端进行独立实现。参考版本与逐项对应见 [FRONTEND_REFERENCE.md](FRONTEND_REFERENCE.md)。
+
+God’s Eye View 的源代码采用 MIT 许可，其附带数据和第三方资产各有独立许可。本次仅参考界面与交互设计，未复制其代码、图像、字体、三维模型或数据；三国项目继续使用原有 Leaflet、本地行政界、历史地名与原文证据。上述致谢不表示参考作者认可本项目或其研究结论。
+
 ## 方法与论文
 
 本项目参考 His-Geo 论文提出的历史地名抽取、地理编码和位置不确定性处理思路，并检查其公开实现。感谢论文作者的研究与工具：

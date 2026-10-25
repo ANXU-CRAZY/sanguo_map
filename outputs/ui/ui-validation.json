@@ -144,6 +144,60 @@
       "status": "PASS"
     },
     {
+      "name": "cockpit map fills the workspace and panel/dock surfaces do not overlap",
+      "status": "PASS",
+      "evidence": {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "map": {
+          "width": 1364,
+          "height": 936
+        },
+        "overlapping_panels": 0
+      }
+    },
+    {
+      "name": "scene panel collapses and focus mode restores via keyboard",
+      "status": "PASS"
+    },
+    {
+      "name": "quick search opens a named persons independent track",
+      "status": "PASS"
+    },
+    {
+      "name": "quick place search focuses the actual candidate and reopens evidence",
+      "status": "PASS",
+      "evidence": {
+        "dx": 0.0024677736809053386,
+        "dy": 0.008568899855454504,
+        "screen_offset_px": 0,
+        "period": "modern"
+      }
+    },
+    {
+      "name": "quick chapter search retains the source edition numbering",
+      "status": "PASS"
+    },
+    {
+      "name": "night and paper themes change painted basemaps without changing camera coordinates",
+      "status": "PASS",
+      "evidence": {
+        "theme_persistence": true,
+        "camera_unchanged": true,
+        "zoom_retains_theme": true
+      }
+    },
+    {
+      "name": "data layer toggles hide and restore identical existing candidate counts",
+      "status": "PASS",
+      "evidence": {
+        "original_candidates": 16,
+        "restored_candidates": 16
+      }
+    },
+    {
       "name": "tablet: seven pages without document overflow",
       "status": "PASS",
       "evidence": {
@@ -187,6 +241,14 @@
       "status": "PASS"
     },
     {
+      "name": "mobile cockpit opens one panel at a time and keeps the map full size",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile timeline and quick search are reachable from the bottom tabs",
+      "status": "PASS"
+    },
+    {
       "name": "offline rendering has no JavaScript errors, failed HTTP responses or external requests",
       "status": "PASS"
     }
@@ -194,7 +256,7 @@
   "errors": [],
   "failed_responses": [],
   "external_requests": [],
-  "passed": 25,
+  "passed": 34,
   "failed": 0,
   "status": "PASS"
 }

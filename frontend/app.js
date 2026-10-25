@@ -90,6 +90,8 @@ function showPage(name, updateHash = true) {
   const previous = state.page;
   if (previous !== name) ui.pageScroll[previous] = window.scrollY;
   state.page = name;
+  document.body.classList.toggle("is-cockpit", name === "overview");
+  if (name !== "overview") document.body.classList.remove("map-focus");
   if (name !== "overview") stopChapterPlayback();
   $("current-page-label").textContent = PAGE_LABELS[name];
   document.title = `${PAGE_LABELS[name]} · 三国时空`;
@@ -110,6 +112,7 @@ function showPage(name, updateHash = true) {
   if (name === "reader") renderReaderChapter(state.selectedChapter);
   if (name === "people") drawTracks();
   if (previous !== name) window.scrollTo({ top: ui.pageScroll[name] || 0, behavior: "instant" });
+  if (typeof updateCockpitNavigation === "function") updateCockpitNavigation();
 }
 
 function mapWithGrid(elementId, center = [35, 105], zoom = 3.7) {
@@ -171,13 +174,16 @@ function mapWithGrid(elementId, center = [35, 105], zoom = 3.7) {
     map._adminBoundaryLevel = level;
     map.getContainer().dataset.adminBoundaryLevel = level;
     map.getContainer().dataset.adminBoundaryFeatureCount = String(data.features.length);
+    if (map._atlasBaseLayers && typeof applyAtlasMapTheme === "function") applyAtlasMapTheme(map);
   };
   drawAdminLevel();
   map.on("zoomend", drawAdminLevel);
+  map._atlasBaseLayers = { countries, lakes, rivers, adminGroup };
   L.control.layers(null, { "周边国家（Natural Earth）": countries, "中国行政区界（2024，随缩放切换）": adminGroup, "河流": rivers, "湖泊": lakes }, { collapsed: true }).addTo(map);
   L.control.scale({ imperial: false, maxWidth: 100 }).addTo(map);
   for (let lat = 15; lat <= 55; lat += 10) L.polyline([[lat, 72], [lat, 135]], { pane: "base-grid", color: "#91a084", weight: .45, opacity: .15, dashArray: "2 6", interactive: false }).addTo(map);
   for (let lon = 75; lon <= 135; lon += 10) L.polyline([[15, lon], [55, lon]], { pane: "base-grid", color: "#91a084", weight: .45, opacity: .15, dashArray: "2 6", interactive: false }).addTo(map);
+  if (typeof applyAtlasMapTheme === "function") applyAtlasMapTheme(map);
   return map;
 }
 function setupMaps() {
@@ -397,6 +403,7 @@ function popupNode(title, subtitle, excerpt, action) {
   return box;
 }
 function selectEvent(event) {
+  if (typeof openCockpitEvidence === "function") openCockpitEvidence();
   ui.selectedEvent = event.event_id;
   $("chapter-event-list").querySelectorAll("[data-event-id]").forEach(node => {
     const selected = node.dataset.eventId === event.event_id;
@@ -410,6 +417,7 @@ function selectEvent(event) {
   $("read-selected").addEventListener("click", () => jumpToParagraph(event.chapter_id, event.paragraph_id));
 }
 function selectPlace(geocode) {
+  if (typeof openCockpitEvidence === "function") openCockpitEvidence();
   const content = $("selection-content");
   content.className = "selection-content";
   const features = state.placeMentions.filter(row => row.historical_toponym === geocode.historical_toponym);
@@ -446,6 +454,7 @@ function drawOverviewMap() {
   const personId = $("person-filter").value;
   let visibleEventCount = 0;
   state.eventGeo.features.forEach(feature => {
+    if ($("layer-events")?.checked === false) return;
     const props = feature.properties;
     if (props.chapter_order > state.selectedChapter || (type !== "all" && props.event_type_candidate !== type)) return;
     const participants = JSON.parse(props.candidate_person_ids || "[]");
@@ -464,6 +473,8 @@ function drawOverviewMap() {
   const coordinateGroups = new Map();
   for (const result of state.geocodes) {
     if (result.geocode_status !== "OK" || result.longitude == null || !visibleNames.has(result.historical_toponym)) continue;
+    if (result.matched_period === "modern" && $("layer-modern")?.checked === false) continue;
+    if (result.matched_period !== "modern" && $("layer-historic")?.checked === false) continue;
     const key = `${Number(result.longitude).toFixed(5)},${Number(result.latitude).toFixed(5)}`;
     if (!coordinateGroups.has(key)) coordinateGroups.set(key, []);
     coordinateGroups.get(key).push(result);
@@ -498,6 +509,8 @@ function mapLabelObstacles(map) {
   const controls = [...map.getContainer().querySelectorAll(".leaflet-control")];
   const stage = map.getContainer().closest(".map-stage");
   if (stage) controls.push(...stage.querySelectorAll(".map-inscription, .map-compass"));
+  const world = map.getContainer().closest(".cockpit-world");
+  if (world) controls.push(...world.querySelectorAll("[data-map-obstacle]"));
   return controls.map(node => node.getBoundingClientRect()).filter(box => box.width > 0 && box.height > 0).map(box => ({ left: box.left-rect.left-5, right: box.right-rect.left+5, top: box.top-rect.top-5, bottom: box.bottom-rect.top+5 }));
 }
 
@@ -930,6 +943,7 @@ async function main() {
     drawTracks(); drawNetwork();
     if (state.chapters.length !== 119) throw new Error(`Expected 119 chapters, loaded ${state.chapters.length}`);
     $("app-loading").hidden = true;
+    if (typeof cockpitReady === "function") cockpitReady();
   } catch (error) {
     console.error(error);
     $("load-status").textContent = "本地数据读取失败";

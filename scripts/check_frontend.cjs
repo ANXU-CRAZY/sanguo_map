@@ -141,6 +141,7 @@ async function chapter(page, value) {
     assert.equal(await page.locator('.finding-card').count(), 4);
   });
   await require('./check_frontend_details.cjs')({page,check,go,chapter});
+  await require('./check_cockpit.cjs').desktop({page,check,go,output});
   await check('tablet: seven pages without document overflow', async () => {
     // Compact visual layout remains a public UI contract across breakpoints.
     await page.setViewportSize({ width: 1024, height: 900 });
@@ -173,6 +174,7 @@ async function chapter(page, value) {
   await check('mobile chapter speed, play and navigation controls do not overlap',async()=>{
     for(const width of [390,320]){
       await mobile.setViewportSize({width,height:844});await go(mobile,'overview',true);
+      if(await mobile.locator('[data-cockpit-sheet="timeline"]').getAttribute('aria-expanded')!=='true')await mobile.locator('[data-cockpit-sheet="timeline"]').click();
       const speed=await mobile.locator('#chapter-speed').boundingBox(),play=await mobile.locator('#chapter-play').boundingBox();
       assert.ok(speed.x+speed.width<=play.x,JSON.stringify({width,speed,play}));
       assert.ok(play.width>=100);assert.ok(play.height>=36);
@@ -182,10 +184,12 @@ async function chapter(page, value) {
     return {viewports:[390,320],overlapping_controls:0};
   });
   await check('mobile navigation dismisses when clicking outside',async()=>{
-    await mobile.locator('#menu-toggle').click();await mobile.locator('footer>span').first().click();
+    await mobile.locator('#menu-toggle').click();await mobile.locator('#overview-map').click({position:{x:150,y:180}});
     assert.equal(await mobile.locator('#menu-toggle').getAttribute('aria-expanded'),'false');
   });
+  await require('./check_cockpit.cjs').mobile({mobile,check,go,output});
   await check('offline rendering has no JavaScript errors, failed HTTP responses or external requests', async () => {
+    // Includes the command palette, both map themes and the mobile cockpit sheets.
     assert.deepEqual(report.errors, []); assert.deepEqual(report.failed_responses, []); assert.deepEqual(report.external_requests, []);
   });
   await page.setViewportSize({ width: 1440, height: 1000 }); await loaded(page);

@@ -41,6 +41,8 @@ $py = 'F:\history_sites\hisgeo_reproduction\.venv-final\Scripts\python.exe'
 
 ## 致谢与学术来源
 
+新版前端参考 [bilawalsidhu/gods-eye-view](https://github.com/bilawalsidhu/gods-eye-view) 的沉浸式地图与控制面板设计，独立实现全幅二维地图、两侧悬浮面板、底部章节控制舱、墨色/宣纸主题、人物/地名/章节快速检索及手机底部面板。按 `/` 或 `Ctrl+K` 检索，按 `F` 专注地图、`Esc` 退出。所有地图与检索仍使用现有本地数据；设计来源与实现边界见 [docs/FRONTEND_REFERENCE.md](docs/FRONTEND_REFERENCE.md)。
+
 感谢 [wonton1984/sanguo-map](https://github.com/wonton1984/sanguo-map) 开源其《三国演义》交互地图。本项目借鉴其地图、时间轴、原文阅读与人物轨迹的交互组织方式；本项目的 119 章解析、候选记录、空间处理和界面代码独立实现。随用的 Leaflet 文件按其自身 BSD-2-Clause 许可另行保留来源和许可声明；参考项目中的人物、事件、图片、轨迹、坐标和行政区数据没有作为本项目数据导入。
 
 本项目的历史地理编码研究方法参考 His-Geo 及其论文。感谢 Yuqi Chen、Wenyi Shang、Hongsu Wang、Sophia Zhang 与 Peter K. Bol 提供研究框架与公开实现：Chen, Y., Shang, W., Wang, H., Zhang, S., & Bol, P. K. (2026). “Geocoding the past world: unearthing coordinates of early China from texts using generative AI.” *International Journal of Geographical Information Science*, 40(3), 781–807. [https://doi.org/10.1080/13658816.2025.2491711](https://doi.org/10.1080/13658816.2025.2491711)。相关代码见 [yukiyuqichen/His-Geo](https://github.com/yukiyuqichen/His-Geo)。本项目将该方法用于《三国演义》文本的独立实验，不代表论文作者或参考项目作者认可本项目结论。
