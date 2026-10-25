@@ -1,0 +1,24 @@
+{
+  "chapter_count_processed": 119,
+  "paragraph_count_processed": 4773,
+  "gazetteer_surface_terms": 12269,
+  "user_specified_place_seed_count": 3,
+  "user_specified_place_seed_mentions": 47,
+  "place_mention_count": 5538,
+  "distinct_toponym_count": 762,
+  "character_seed_count": 20,
+  "character_mention_count": 9843,
+  "distinct_character_surface_count": 69,
+  "time_expression_count": 511,
+  "event_candidate_count": 1836,
+  "event_candidates_by_type": {
+    "appointment": 52,
+    "politics": 347,
+    "movement": 182,
+    "war": 1087,
+    "alliance": 27,
+    "death": 141
+  },
+  "extraction_method": "Deterministic exact gazetteer/alias dictionary matching and paragraph trigger rules. No model/API inference was run.",
+  "interpretation_limit": "Names and events are text-grounded candidate records, not human-validated entity resolution, historical geocoding, event segmentation, or historical fact claims."
+}

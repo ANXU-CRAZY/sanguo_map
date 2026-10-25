@@ -1,0 +1,127 @@
+{
+  "status": "PASS",
+  "http": {
+    "frameId": "BB5DD6679505A4E257628B0EBE3A8450",
+    "loaderId": "6291820175F1890FCEAD4DE421E3F4A3",
+    "isDownload": false
+  },
+  "desktopOverview": {
+    "title": "三国演义 · 历史时空分析",
+    "ready": "complete",
+    "chapters": 119,
+    "stats": [
+      "原文覆盖\n119 / 119\n章节",
+      "段落证据\n4,773\n稳定 paragraph_id",
+      "事件候选\n1,836\n规则筛选，待审",
+      "主路径唯一匹配\n326\n215 个现代参照",
+      "人物提及\n9,843\n20 个种子实体"
+    ],
+    "map": true,
+    "eventCanvas": 1
+  },
+  "basemap": {
+    "attribution": "Leaflet | China admin: user-provided 2024 data (GS（2024）0650号); surrounding context: Natural Earth",
+    "layerControls": 4,
+    "localSources": [
+      "/frontend/data/basemap/countries.geojson",
+      "/frontend/data/basemap/rivers.geojson",
+      "/frontend/data/basemap/lakes.geojson",
+      "/frontend/data/basemap/china_admin_2024/province.geojson",
+      "/frontend/data/basemap/china_admin_2024/city.geojson",
+      "/frontend/data/basemap/china_admin_2024/county.geojson"
+    ]
+  },
+  "has2024Layers": true,
+  "basemapLayerMenuOpen": true,
+  "chapterOne": {
+    "status": "第 1 章及以前 · 0 条事件候选 · 16 处有坐标的原文地名 · 当前视野标注 12 个古地名",
+    "labels": 12,
+    "events": "14 条候选"
+  },
+  "chapterFortyNine": {
+    "status": "第 49 章及以前 · 45 条事件候选 · 211 处有坐标的原文地名 · 当前视野标注 12 个古地名",
+    "labels": 12,
+    "events": "8 条候选"
+  },
+  "timeline": "第 49 / 119 章",
+  "playback": {
+    "chapter": "第 50 / 119 章",
+    "playing": "true"
+  },
+  "eventFilter": "第 49 章及以前 · 29 条事件候选 · 211 处有坐标的原文地名 · 当前视野标注 12 个古地名",
+  "labelsOff": 0,
+  "labelsOn": 12,
+  "zoomedLabels": 1,
+  "provinceLevel": "province",
+  "provinceFeatures": 42,
+  "countyLevel": "county",
+  "countyFeatures": 2898,
+  "dynamicOK": true,
+  "search": {
+    "hits": 13,
+    "hasSeededBattlefield": true,
+    "readerChapter": "第四十七章阚泽密献诈降书庞统巧授连环计",
+    "highlightCount": 1
+  },
+  "people": {
+    "selected": "刘备",
+    "personId": "person_daf7b56cd3ae",
+    "selectorOptions": 20,
+    "comparisonControls": 0,
+    "sourceRows": 35,
+    "nodeCount": 35,
+    "locationCount": 19,
+    "lineCount": 1,
+    "status": "35 条同段候选 · 19 个地图点 · 29 个顺序轨迹节点",
+    "changedPersonId": "person_2d0b5eef6609",
+    "changedNodeCount": 29,
+    "singlePointTrack": {
+      "selected": "袁术",
+      "sourceRows": 1,
+      "nodeCount": 1,
+      "locationCount": 1,
+      "markerCount": 1,
+      "lineCount": 0,
+      "status": "1 条同段候选 · 1 个地图点 · 单点证据"
+    },
+    "trackPopup": {
+      "open": true,
+      "text": "州县\n袁术 · 1 条同段地名候选 · ch_014 ch_014_p_0046\n\n历史地名志筛查坐标；MED 0.00 km。人物与地点在原文同段共现，尚未人工确认地点指代或实际到访。\n\n查看原文证据",
+      "button": true
+    },
+    "trackSourceJump": {
+      "page": true,
+      "highlight": true
+    },
+    "screenshot": "outputs/figures/webgis-single-person-track.png"
+  },
+  "peopleSinglePersonOK": true,
+  "peopleSinglePointOK": true,
+  "analysis": {
+    "status": "COMPUTED_UNVERIFIED_HISTORIC_GAZETTEER_CANDIDATES",
+    "bufferCards": 6,
+    "caption": "核密度输入 95 个战争段落—地名共现点；Gaussian bandwidth 120 km，网格 40 km，输出 2,408 格。Albers equal-area grid supports comparable cell areas; projected Euclidean distances remain an approximation and are not a route or historical battlefield extent.",
+    "canvasCount": 1
+  },
+  "places": {
+    "rows": 1,
+    "content": "原文地名\n出现段落\n状态\n坐标 / MED\nGazetteer 候选\n赤壁\n20 段\nOK\n113.884, 29.750 · MED 68.0km\nmodern:421281\n\n显示 1 / 1 条；搜索与筛选基于完整清单。"
+  },
+  "networkNodes": 72,
+  "findingCards": 4,
+  "mobile": {
+    "menuOpen": true,
+    "horizontalOverflow": false,
+    "navItems": 7
+  },
+  "externalRequests": [],
+  "httpErrors": [],
+  "pageErrors": [],
+  "screenshots": [
+    "outputs/figures/webgis-desktop.png",
+    "outputs/figures/webgis-mobile.png",
+    "outputs/figures/webgis-county-detail.png",
+    "outputs/figures/webgis-single-person-track.png"
+  ],
+  "tool": "Chromium headless via Chrome DevTools Protocol; no browser automation package or external service"
+}

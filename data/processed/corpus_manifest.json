@@ -1,0 +1,1096 @@
+{
+  "source_root": "F:\\history_sites\\三国演义全文\\三国演义_Markdown",
+  "source_files": [
+    {
+      "source_file": "001_第一章宴桃园豪杰三结义斩黄巾英雄首立功.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\001_第一章宴桃园豪杰三结义斩黄巾英雄首立功.md",
+      "sha256": "87d3438cbeec8a31430dcddc842986a2f1c2d8804f7408f7a2caab2709325fa7",
+      "bytes": 13950,
+      "chapter_id": "ch_001",
+      "paragraph_count": 38
+    },
+    {
+      "source_file": "002_第二章张翼德怒鞭督邮何国舅谋诛宦竖.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\002_第二章张翼德怒鞭督邮何国舅谋诛宦竖.md",
+      "sha256": "dfc2f9566f7ade5094408d14b862eeffad54a3bf0a9052c99468ec67252933f9",
+      "bytes": 17231,
+      "chapter_id": "ch_002",
+      "paragraph_count": 33
+    },
+    {
+      "source_file": "003_第三章议温明董卓叱丁原馈金珠李肃说吕布.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\003_第三章议温明董卓叱丁原馈金珠李肃说吕布.md",
+      "sha256": "89375c2d8a8d65a7ac6f8b87ed1b02117e1b4fc6ae82221f24c063a6c391ae2e",
+      "bytes": 14943,
+      "chapter_id": "ch_003",
+      "paragraph_count": 38
+    },
+    {
+      "source_file": "004_第四章废汉帝陈留践位谋董贼孟德献刀.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\004_第四章废汉帝陈留践位谋董贼孟德献刀.md",
+      "sha256": "2805d5431ce90ef7f38b2724820de1be7936f30e9f66a84900debca50f507b4b",
+      "bytes": 12401,
+      "chapter_id": "ch_004",
+      "paragraph_count": 42
+    },
+    {
+      "source_file": "005_第五章发矫诏诸镇应曹公破关兵三英战吕布.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\005_第五章发矫诏诸镇应曹公破关兵三英战吕布.md",
+      "sha256": "8f50f70590146d8bc80685534f7aa4289b74d9f74c13777b2bb83930b8588055",
+      "bytes": 16928,
+      "chapter_id": "ch_005",
+      "paragraph_count": 66
+    },
+    {
+      "source_file": "006_第六章焚金阙董卓行凶匿玉玺孙坚背约.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\006_第六章焚金阙董卓行凶匿玉玺孙坚背约.md",
+      "sha256": "c959be6c8bdea5a6eac1516834f9a0f5ed21dba8ef26fba4234402bd30525718",
+      "bytes": 12463,
+      "chapter_id": "ch_006",
+      "paragraph_count": 34
+    },
+    {
+      "source_file": "007_第七章袁绍磐河战公孙孙坚跨江击刘表.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\007_第七章袁绍磐河战公孙孙坚跨江击刘表.md",
+      "sha256": "b35636dc74150468358629dc6ea973333b0e263c395c541c863a12b098a3a8c3",
+      "bytes": 13884,
+      "chapter_id": "ch_007",
+      "paragraph_count": 38
+    },
+    {
+      "source_file": "008_第八章王司徒巧使连环计董太师大闹凤仪亭.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\008_第八章王司徒巧使连环计董太师大闹凤仪亭.md",
+      "sha256": "26f13101dfa7602daf56ee518174d42adc873c54cde1a280b73a09f952365677",
+      "bytes": 12725,
+      "chapter_id": "ch_008",
+      "paragraph_count": 36
+    },
+    {
+      "source_file": "009_第九章除暴凶吕布助司徒犯长安李鮬听贾诩.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\009_第九章除暴凶吕布助司徒犯长安李鮬听贾诩.md",
+      "sha256": "b93f62d0a4111bd929268c3c20b7293e1c05d786f25b7f1d0f2cf630d65ae53f",
+      "bytes": 15961,
+      "chapter_id": "ch_009",
+      "paragraph_count": 52
+    },
+    {
+      "source_file": "010_第十章勤王室马腾举义报父仇曹操兴师.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\010_第十章勤王室马腾举义报父仇曹操兴师.md",
+      "sha256": "c71d75e26d3e62bb808c8c293750d3d2e8265717fa56cc92e0dae8f5f76e4fda",
+      "bytes": 12523,
+      "chapter_id": "ch_010",
+      "paragraph_count": 28
+    },
+    {
+      "source_file": "011_第十一章刘皇叔北海救孔融吕温侯濮阳破曹操.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\011_第十一章刘皇叔北海救孔融吕温侯濮阳破曹操.md",
+      "sha256": "2cc52a9ee36cd920fc36b160c5a0f419146180653f0b298e402375c02a3b47de",
+      "bytes": 17349,
+      "chapter_id": "ch_011",
+      "paragraph_count": 41
+    },
+    {
+      "source_file": "012_第十二章陶恭祖三让徐州曹孟德大战吕布.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\012_第十二章陶恭祖三让徐州曹孟德大战吕布.md",
+      "sha256": "88ffd46bdc26028f40d5e042771f4f0283048f1a07ce48bc778712f8e4950850",
+      "bytes": 13640,
+      "chapter_id": "ch_012",
+      "paragraph_count": 30
+    },
+    {
+      "source_file": "013_第十三章李鮬郭汜大交兵杨奉董承双救驾.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\013_第十三章李鮬郭汜大交兵杨奉董承双救驾.md",
+      "sha256": "b2db39ea6eec3376740692fe3a1e4267ecbe4f0de0dfe12dbf4f08fdef67e2c5",
+      "bytes": 17726,
+      "chapter_id": "ch_013",
+      "paragraph_count": 57
+    },
+    {
+      "source_file": "014_第十四章曹孟德移驾幸许都吕奉先乘夜袭徐郡.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\014_第十四章曹孟德移驾幸许都吕奉先乘夜袭徐郡.md",
+      "sha256": "00811008451ffb56d124535e6556262bac5ae7fa0ed0d53fa152f6e1c5b07164",
+      "bytes": 18890,
+      "chapter_id": "ch_014",
+      "paragraph_count": 57
+    },
+    {
+      "source_file": "015_第十五章太史慈酣斗小霸王孙伯符大战严白虎.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\015_第十五章太史慈酣斗小霸王孙伯符大战严白虎.md",
+      "sha256": "e5155e2acbe784e48f54a956854819dce4fd9e999ae892df8a488dd2340e7687",
+      "bytes": 21673,
+      "chapter_id": "ch_015",
+      "paragraph_count": 52
+    },
+    {
+      "source_file": "016_第十六章吕奉先射戟辕门曹孟德败师鮭水.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\016_第十六章吕奉先射戟辕门曹孟德败师鮭水.md",
+      "sha256": "e6959c08aa9ffa03f1a7828971171e461a3d5718ec4e2e607a4be8429c3a78ac",
+      "bytes": 20166,
+      "chapter_id": "ch_016",
+      "paragraph_count": 56
+    },
+    {
+      "source_file": "017_第十七章袁公路大起七军曹孟德会合三将.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\017_第十七章袁公路大起七军曹孟德会合三将.md",
+      "sha256": "54b49418e1b62ef448207d678f1780f46a5e840160c23b86057f815f0059a423",
+      "bytes": 13023,
+      "chapter_id": "ch_017",
+      "paragraph_count": 32
+    },
+    {
+      "source_file": "018_第十八章贾文和料敌决胜夏侯拔矢啖睛.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\018_第十八章贾文和料敌决胜夏侯拔矢啖睛.md",
+      "sha256": "1235e7b9d0aef9230cc82a0ad6b6faaf14545a82d563739a95f8e7427760e318",
+      "bytes": 11311,
+      "chapter_id": "ch_018",
+      "paragraph_count": 28
+    },
+    {
+      "source_file": "019_第十九章下邳城曹操鏖兵白门楼吕布殒命.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\019_第十九章下邳城曹操鏖兵白门楼吕布殒命.md",
+      "sha256": "742a714b74a921bbb07be27500fc8e3a2ce18de3e934873c104337217d0a0f49",
+      "bytes": 19427,
+      "chapter_id": "ch_019",
+      "paragraph_count": 57
+    },
+    {
+      "source_file": "020_第二十章曹阿瞒许田打围董国舅内阁受诏.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\020_第二十章曹阿瞒许田打围董国舅内阁受诏.md",
+      "sha256": "86f94fcedeef120d869b20ae4317a664b1f5e7031647fb5ef90cece49632de3d",
+      "bytes": 13578,
+      "chapter_id": "ch_020",
+      "paragraph_count": 35
+    },
+    {
+      "source_file": "021_第二十一章曹操煮酒论英雄关公赚城斩车胄.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\021_第二十一章曹操煮酒论英雄关公赚城斩车胄.md",
+      "sha256": "21c723719855804f71d5b6814e93da4302236383428d1c7a80869fbaa6257156",
+      "bytes": 14335,
+      "chapter_id": "ch_021",
+      "paragraph_count": 46
+    },
+    {
+      "source_file": "022_第二十二章袁曹各起马步三军关张共擒王刘二将.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\022_第二十二章袁曹各起马步三军关张共擒王刘二将.md",
+      "sha256": "975687e69eda37c0b2433168e0f73feea49217a1b6d6a1b71ecc42d5bcf75c2b",
+      "bytes": 16368,
+      "chapter_id": "ch_022",
+      "paragraph_count": 47
+    },
+    {
+      "source_file": "023_第二十三章祢正平裸衣骂贼吉太医下毒遭刑.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\023_第二十三章祢正平裸衣骂贼吉太医下毒遭刑.md",
+      "sha256": "562498d79e2d0cf94b83eb0e7b8de6ca837c9a139fe94e4c4b0a6df9f7cd19c8",
+      "bytes": 17048,
+      "chapter_id": "ch_023",
+      "paragraph_count": 51
+    },
+    {
+      "source_file": "024_第二十四章国贼行凶杀贵妃皇叔败走投袁绍.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\024_第二十四章国贼行凶杀贵妃皇叔败走投袁绍.md",
+      "sha256": "d4600c8021c00001d801bd424c326c0297cc9b6229b874a0e7074f6dd77a1bc1",
+      "bytes": 8389,
+      "chapter_id": "ch_024",
+      "paragraph_count": 34
+    },
+    {
+      "source_file": "025_第二十五章屯土山关公约三事救白马曹操解重围.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\025_第二十五章屯土山关公约三事救白马曹操解重围.md",
+      "sha256": "3b309444b8b4f2652816bb6658f2eb028a03b6dfe6411b03f86fb07a3430e073",
+      "bytes": 15109,
+      "chapter_id": "ch_025",
+      "paragraph_count": 52
+    },
+    {
+      "source_file": "026_第二十六章袁本初损兵折将关云长挂印封金.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\026_第二十六章袁本初损兵折将关云长挂印封金.md",
+      "sha256": "d1b12dcd6a5a64faa359f4390babbc020fb816320c6f00b9ab470d327d0acc9e",
+      "bytes": 12376,
+      "chapter_id": "ch_026",
+      "paragraph_count": 28
+    },
+    {
+      "source_file": "027_第二十七章美髯公千里走单骑汉寿侯五关斩六将.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\027_第二十七章美髯公千里走单骑汉寿侯五关斩六将.md",
+      "sha256": "ab22009b59b1f68300b3938bf168b4386e3782f06091a577c66c63e0bdc594d1",
+      "bytes": 15372,
+      "chapter_id": "ch_027",
+      "paragraph_count": 35
+    },
+    {
+      "source_file": "028_第二十八章斩蔡阳兄弟释疑会古城主臣聚义.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\028_第二十八章斩蔡阳兄弟释疑会古城主臣聚义.md",
+      "sha256": "7e96d92b20cfa0fa232131ad3dc2461b523e32677b2a10932413becbe385436a",
+      "bytes": 18075,
+      "chapter_id": "ch_028",
+      "paragraph_count": 44
+    },
+    {
+      "source_file": "029_第二十九章小霸王怒斩于吉碧眼儿坐领江东.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\029_第二十九章小霸王怒斩于吉碧眼儿坐领江东.md",
+      "sha256": "9873db00c7eabdc754579c69f820f28bf823929e8b5543d96757ed6b95bfaccd",
+      "bytes": 14997,
+      "chapter_id": "ch_029",
+      "paragraph_count": 38
+    },
+    {
+      "source_file": "030_第三十章战官渡本初败绩劫乌巢孟德烧粮.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\030_第三十章战官渡本初败绩劫乌巢孟德烧粮.md",
+      "sha256": "19c665d615350d8edb745a9f44588058396cd54722308af79881a18bb72b1568",
+      "bytes": 17324,
+      "chapter_id": "ch_030",
+      "paragraph_count": 54
+    },
+    {
+      "source_file": "031_第三十一章曹操仓亭破本初玄德荆州依刘表.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\031_第三十一章曹操仓亭破本初玄德荆州依刘表.md",
+      "sha256": "30ca0de2c821ee72c35ddc1e181777f97834d898372f583bc65c4b9762758bd0",
+      "bytes": 14284,
+      "chapter_id": "ch_031",
+      "paragraph_count": 31
+    },
+    {
+      "source_file": "032_第三十二章夺冀州袁尚争锋决漳河许攸献计.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\032_第三十二章夺冀州袁尚争锋决漳河许攸献计.md",
+      "sha256": "3b7b02431c20a91325f11da66a0a73faf289ac04492f35ecedb2dd773cafb184",
+      "bytes": 16683,
+      "chapter_id": "ch_032",
+      "paragraph_count": 44
+    },
+    {
+      "source_file": "033_第三十三章曹丕乘乱纳甄氏郭嘉遗计定辽东.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\033_第三十三章曹丕乘乱纳甄氏郭嘉遗计定辽东.md",
+      "sha256": "c143657dfbd919b10c7c409ffcb70c3fc0a86d951dcd98920eeba6833a87d231",
+      "bytes": 15452,
+      "chapter_id": "ch_033",
+      "paragraph_count": 48
+    },
+    {
+      "source_file": "034_第三十四章蔡夫人隔屏听密语刘皇叔跃马过檀溪.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\034_第三十四章蔡夫人隔屏听密语刘皇叔跃马过檀溪.md",
+      "sha256": "1eb5d9154bd1d8f0a248a86fa8f9a124af0976674f6b32e073c1fb6ac38e9f29",
+      "bytes": 13092,
+      "chapter_id": "ch_034",
+      "paragraph_count": 47
+    },
+    {
+      "source_file": "035_第三十五章玄德南漳逢隐沦单福新野遇英主.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\035_第三十五章玄德南漳逢隐沦单福新野遇英主.md",
+      "sha256": "a05dd93390b79fb0d04177673146574633862ff111318c919b21053dfc771b85",
+      "bytes": 11532,
+      "chapter_id": "ch_035",
+      "paragraph_count": 32
+    },
+    {
+      "source_file": "036_第三十六章玄德用计袭樊城元直走马荐诸葛.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\036_第三十六章玄德用计袭樊城元直走马荐诸葛.md",
+      "sha256": "88721391cc4a83c1f5cc924c4c2312dbe468fb9702c25b1d01f3a6e546ad19d9",
+      "bytes": 12656,
+      "chapter_id": "ch_036",
+      "paragraph_count": 33
+    },
+    {
+      "source_file": "037_第三十七章司马徽再荐名士刘玄德三顾草庐.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\037_第三十七章司马徽再荐名士刘玄德三顾草庐.md",
+      "sha256": "b93dc65cb3a67e06e7dfafc28eb4b8b46f874157d6d0ba0ddab2a07786481afe",
+      "bytes": 14414,
+      "chapter_id": "ch_037",
+      "paragraph_count": 78
+    },
+    {
+      "source_file": "038_第三十八章定三分隆中决策战长江孙氏报仇.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\038_第三十八章定三分隆中决策战长江孙氏报仇.md",
+      "sha256": "79800e51c24010536bb18f6f9e130eebf1c483c0bf6a9d62c56eff0dd1cc9378",
+      "bytes": 15084,
+      "chapter_id": "ch_038",
+      "paragraph_count": 50
+    },
+    {
+      "source_file": "039_第三十九章荆州城公子三求计博望坡军师初用兵.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\039_第三十九章荆州城公子三求计博望坡军师初用兵.md",
+      "sha256": "8a390cb6d1b48cd6a32d38656160060d70a3053538c0b858d1b499f356b11469",
+      "bytes": 14289,
+      "chapter_id": "ch_039",
+      "paragraph_count": 35
+    },
+    {
+      "source_file": "040_第四十章蔡夫人议献荆州诸葛亮火烧新野.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\040_第四十章蔡夫人议献荆州诸葛亮火烧新野.md",
+      "sha256": "b84fef763d007553fd8f46e2f59623f9563865c0b6df1c10ba47c698fa1985ba",
+      "bytes": 13523,
+      "chapter_id": "ch_040",
+      "paragraph_count": 36
+    },
+    {
+      "source_file": "041_第四十一章刘玄德携民渡江赵子龙单骑救主.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\041_第四十一章刘玄德携民渡江赵子龙单骑救主.md",
+      "sha256": "88d819ff54920ef11f8fe56d908e9461f5690385032da0c56e371e701edaa511",
+      "bytes": 18150,
+      "chapter_id": "ch_041",
+      "paragraph_count": 53
+    },
+    {
+      "source_file": "042_第四十二章张翼德大闹长坂桥刘豫州败走汉津口.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\042_第四十二章张翼德大闹长坂桥刘豫州败走汉津口.md",
+      "sha256": "71d03c4647a1eb14c3f7f726dcc2984f8fb701079830236a8f6df3d090f02865",
+      "bytes": 11203,
+      "chapter_id": "ch_042",
+      "paragraph_count": 31
+    },
+    {
+      "source_file": "043_第四十三章诸葛亮舌战群儒鲁子敬力排众议.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\043_第四十三章诸葛亮舌战群儒鲁子敬力排众议.md",
+      "sha256": "2a85848bb67732ce62641bbb8ac9e0bc218eedb6d7d4532ed76299fdf1998a4b",
+      "bytes": 16227,
+      "chapter_id": "ch_043",
+      "paragraph_count": 35
+    },
+    {
+      "source_file": "044_第四十四章孔明用智激周瑜孙权决计破曹操.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\044_第四十四章孔明用智激周瑜孙权决计破曹操.md",
+      "sha256": "2587f6fa58c3b18e2b93605a9a0ee0f7b533ac6d532350498194220b5aa91d2e",
+      "bytes": 14014,
+      "chapter_id": "ch_044",
+      "paragraph_count": 31
+    },
+    {
+      "source_file": "045_第四十五章三江口曹操折兵群英会蒋干中计.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\045_第四十五章三江口曹操折兵群英会蒋干中计.md",
+      "sha256": "6d6bba4a08a636a03bc66372b3de707f63d1b5f10ac579d86867dc258a82c2e3",
+      "bytes": 16479,
+      "chapter_id": "ch_045",
+      "paragraph_count": 47
+    },
+    {
+      "source_file": "046_第四十六章用奇谋孔明借箭献密计黄盖受刑.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\046_第四十六章用奇谋孔明借箭献密计黄盖受刑.md",
+      "sha256": "6bacc83d8b150408be4f9685204ce284d5d6f43b1c52b29b686a306cfd6dae38",
+      "bytes": 14520,
+      "chapter_id": "ch_046",
+      "paragraph_count": 44
+    },
+    {
+      "source_file": "047_第四十七章阚泽密献诈降书庞统巧授连环计.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\047_第四十七章阚泽密献诈降书庞统巧授连环计.md",
+      "sha256": "4b6d038760cf7a99e7b8691391a5bd4d14f6a843713b593c58b203fbdf65f4fa",
+      "bytes": 12145,
+      "chapter_id": "ch_047",
+      "paragraph_count": 34
+    },
+    {
+      "source_file": "048_第四十八章宴长江曹操赋诗锁战船北军用武.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\048_第四十八章宴长江曹操赋诗锁战船北军用武.md",
+      "sha256": "2ff4b24e9cc5dab4ad819a40c0943141c9175d08c73707beff00e4e6d9f747f3",
+      "bytes": 10254,
+      "chapter_id": "ch_048",
+      "paragraph_count": 29
+    },
+    {
+      "source_file": "049_第四十九章七星坛诸葛祭风三江口周瑜纵火.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\049_第四十九章七星坛诸葛祭风三江口周瑜纵火.md",
+      "sha256": "b88c54bcb42e0e2fb9d1c9f980919bae3784f12fe28229633f075095fc8b7e4e",
+      "bytes": 15938,
+      "chapter_id": "ch_049",
+      "paragraph_count": 42
+    },
+    {
+      "source_file": "050_第五十章诸葛亮智算华容关云长义释曹操.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\050_第五十章诸葛亮智算华容关云长义释曹操.md",
+      "sha256": "2a9fa2d445ab80ca9279f44e2e86ee3c125da4e0caff63257daba04bd6af9d67",
+      "bytes": 11762,
+      "chapter_id": "ch_050",
+      "paragraph_count": 33
+    },
+    {
+      "source_file": "051_第五十一章曹仁大战东吴兵孔明一气周公瑾.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\051_第五十一章曹仁大战东吴兵孔明一气周公瑾.md",
+      "sha256": "8e082943df2811e64ec6bcd1da66c643d16edae9eb3d264304a99229b48749cc",
+      "bytes": 13384,
+      "chapter_id": "ch_051",
+      "paragraph_count": 28
+    },
+    {
+      "source_file": "052_第五十二章诸葛亮智辞鲁肃赵子龙计取桂阳.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\052_第五十二章诸葛亮智辞鲁肃赵子龙计取桂阳.md",
+      "sha256": "aa2dcf6afa7300d048b304ef7635979d6108e05fd972126866c9affdd4b7e80c",
+      "bytes": 13835,
+      "chapter_id": "ch_052",
+      "paragraph_count": 27
+    },
+    {
+      "source_file": "053_第五十三章关云长义释黄汉升孙仲谋大战张文远.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\053_第五十三章关云长义释黄汉升孙仲谋大战张文远.md",
+      "sha256": "ffec6ad3646cf007c7cc4862055c099fa7d2e81ecdf5fbbd7c7c54d00ff4720b",
+      "bytes": 14170,
+      "chapter_id": "ch_053",
+      "paragraph_count": 40
+    },
+    {
+      "source_file": "054_第五十四章吴国太佛寺看新郎刘皇叔洞房续佳偶.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\054_第五十四章吴国太佛寺看新郎刘皇叔洞房续佳偶.md",
+      "sha256": "35eb1815b64d03caa648e301bfe1fb448017c7bce74877a4ce5638382b1047f1",
+      "bytes": 15526,
+      "chapter_id": "ch_054",
+      "paragraph_count": 43
+    },
+    {
+      "source_file": "055_第五十五章玄德智激孙夫人孔明二气周公瑾.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\055_第五十五章玄德智激孙夫人孔明二气周公瑾.md",
+      "sha256": "a63fa738398ced8a8bda4bccfedda3c16c885f91136f49e38dfca237ca8f6b68",
+      "bytes": 13051,
+      "chapter_id": "ch_055",
+      "paragraph_count": 31
+    },
+    {
+      "source_file": "056_第五十六章曹操大宴铜雀台孔明三气周公瑾.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\056_第五十六章曹操大宴铜雀台孔明三气周公瑾.md",
+      "sha256": "cb8176cfa021dca20ebec67623ff0c3f410774e6f02c190e2d365ca72bfe85f3",
+      "bytes": 14584,
+      "chapter_id": "ch_056",
+      "paragraph_count": 34
+    },
+    {
+      "source_file": "057_第五十七章柴桑口卧龙吊丧耒阳县凤雏理事.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\057_第五十七章柴桑口卧龙吊丧耒阳县凤雏理事.md",
+      "sha256": "2dd5a21f240e41ac8889cb981b6fded988d813bbb533ba81385c3d6c027e9bab",
+      "bytes": 16725,
+      "chapter_id": "ch_057",
+      "paragraph_count": 56
+    },
+    {
+      "source_file": "058_第五十八章马孟起兴兵雪恨曹阿瞒割须弃袍.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\058_第五十八章马孟起兴兵雪恨曹阿瞒割须弃袍.md",
+      "sha256": "86f91c53394057661bc060607c685e1d7b01b4f3e556f6e0c9e0568361895844",
+      "bytes": 15719,
+      "chapter_id": "ch_058",
+      "paragraph_count": 36
+    },
+    {
+      "source_file": "059_第五十九章许褚裸衣斗马超曹操抹书间韩遂.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\059_第五十九章许褚裸衣斗马超曹操抹书间韩遂.md",
+      "sha256": "7cb204167b562b6795917cd165a17ddb1ff9f59b5f5d71542617e6eb69ad5356",
+      "bytes": 16138,
+      "chapter_id": "ch_059",
+      "paragraph_count": 34
+    },
+    {
+      "source_file": "060_第六十章张永年反难杨修庞士元议取西蜀.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\060_第六十章张永年反难杨修庞士元议取西蜀.md",
+      "sha256": "f29cff4ce501e689eeb95a77532fb0d48911c4b2dec2fee4726ff3ad7bc6e957",
+      "bytes": 22026,
+      "chapter_id": "ch_060",
+      "paragraph_count": 47
+    },
+    {
+      "source_file": "061_第六十一章赵云截江夺阿斗孙权遗书退老瞒.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\061_第六十一章赵云截江夺阿斗孙权遗书退老瞒.md",
+      "sha256": "96b67d99aabf1b166c2b56c77efa356eba5fd62aff89d1430ef989b799c0a992",
+      "bytes": 14924,
+      "chapter_id": "ch_061",
+      "paragraph_count": 48
+    },
+    {
+      "source_file": "062_第六十二章取涪关杨高授首攻雒城黄魏争功.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\062_第六十二章取涪关杨高授首攻雒城黄魏争功.md",
+      "sha256": "752d25aced7a5a9deb4ecaf2b35d6d66e3eef0b9f0a1f9e89ed79cc2101431a5",
+      "bytes": 16399,
+      "chapter_id": "ch_062",
+      "paragraph_count": 49
+    },
+    {
+      "source_file": "063_第六十三章诸葛亮痛哭庞统张翼德义释严颜.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\063_第六十三章诸葛亮痛哭庞统张翼德义释严颜.md",
+      "sha256": "cc34c5d9f77af50fbd071c56b06048123ed488f2a17a51a8fbf881c737b2d0a3",
+      "bytes": 16190,
+      "chapter_id": "ch_063",
+      "paragraph_count": 54
+    },
+    {
+      "source_file": "064_第六十四章孔明定计捉张任杨阜借兵破马超.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\064_第六十四章孔明定计捉张任杨阜借兵破马超.md",
+      "sha256": "269ea1a9868d02061a76e8c075ffbcb16d6fe72ec1f76535a695921a7d1fcb04",
+      "bytes": 15711,
+      "chapter_id": "ch_064",
+      "paragraph_count": 40
+    },
+    {
+      "source_file": "065_第一章马超大战葭萌关刘备自领益州牧.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\065_第一章马超大战葭萌关刘备自领益州牧.md",
+      "sha256": "3966aa6de73f21b50b056126c5d438580876515a99e68d0e365d3f3a7aca05a0",
+      "bytes": 18215,
+      "chapter_id": "ch_065",
+      "paragraph_count": 42
+    },
+    {
+      "source_file": "066_第二章关云长单刀赴会伏皇后为国捐生.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\066_第二章关云长单刀赴会伏皇后为国捐生.md",
+      "sha256": "9a50bfaece9b557c8143984cc2f0b8483f16829d502cc3d3f63566850c235c53",
+      "bytes": 15637,
+      "chapter_id": "ch_066",
+      "paragraph_count": 43
+    },
+    {
+      "source_file": "067_第三章曹操平定汉中地张辽威震逍遥津.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\067_第三章曹操平定汉中地张辽威震逍遥津.md",
+      "sha256": "a8e85a0457b5738ffbd239a5ed5962a7809cd586d548395a355117ef52055864",
+      "bytes": 16108,
+      "chapter_id": "ch_067",
+      "paragraph_count": 46
+    },
+    {
+      "source_file": "068_第四章甘宁百骑劫魏营左慈掷杯戏曹操.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\068_第四章甘宁百骑劫魏营左慈掷杯戏曹操.md",
+      "sha256": "0819e36667bac649418d6f50246a4720a28bb2dd3e377feec417889e914836c5",
+      "bytes": 15175,
+      "chapter_id": "ch_068",
+      "paragraph_count": 37
+    },
+    {
+      "source_file": "069_第五章卜周易管辂知机讨汉贼五臣死节.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\069_第五章卜周易管辂知机讨汉贼五臣死节.md",
+      "sha256": "2fe9193b26613c36813282fbef8577edba2af9bee26766b8006148fcc1de5c7b",
+      "bytes": 14631,
+      "chapter_id": "ch_069",
+      "paragraph_count": 32
+    },
+    {
+      "source_file": "070_第六章猛张飞智取瓦口隘老黄忠计夺天荡山.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\070_第六章猛张飞智取瓦口隘老黄忠计夺天荡山.md",
+      "sha256": "d5e11761887ad124d6663967ac0375343ac3cb44fc459cfd302961635945c778",
+      "bytes": 15264,
+      "chapter_id": "ch_070",
+      "paragraph_count": 35
+    },
+    {
+      "source_file": "071_第七章占对山黄忠逸待劳据汉水赵云寡胜众.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\071_第七章占对山黄忠逸待劳据汉水赵云寡胜众.md",
+      "sha256": "ba5be1879b245174ca12da4720a8ffdcf83f43785048087493dbbf0b50c0cd9e",
+      "bytes": 16596,
+      "chapter_id": "ch_071",
+      "paragraph_count": 44
+    },
+    {
+      "source_file": "072_第八章诸葛亮智取汉中曹阿瞒兵退斜谷.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\072_第八章诸葛亮智取汉中曹阿瞒兵退斜谷.md",
+      "sha256": "539d9474e7eab409a4648a13f487c1edb4dc1e20f1338c8b11086e128d782796",
+      "bytes": 12710,
+      "chapter_id": "ch_072",
+      "paragraph_count": 30
+    },
+    {
+      "source_file": "073_第九章玄德进位汉中王云长攻拔襄阳郡.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\073_第九章玄德进位汉中王云长攻拔襄阳郡.md",
+      "sha256": "1e661b11531d50344f8db215ac82b7bc5b85df27f4dc38080b7ef752082d8cca",
+      "bytes": 14942,
+      "chapter_id": "ch_073",
+      "paragraph_count": 42
+    },
+    {
+      "source_file": "074_第十章庞令明抬榇决死战关云长放水淹七军.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\074_第十章庞令明抬榇决死战关云长放水淹七军.md",
+      "sha256": "1a377ae649d95f731105fd9ef2f4f60b5d35da2be08699990d931cb634734a32",
+      "bytes": 13382,
+      "chapter_id": "ch_074",
+      "paragraph_count": 30
+    },
+    {
+      "source_file": "075_第十一章关云长刮骨疗毒吕子明白衣渡江.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\075_第十一章关云长刮骨疗毒吕子明白衣渡江.md",
+      "sha256": "a6f4d81ad9c709cd3f8022e28a134d779117745ab9e87307a6559e5e27688138",
+      "bytes": 11987,
+      "chapter_id": "ch_075",
+      "paragraph_count": 27
+    },
+    {
+      "source_file": "076_第十二章徐公明大战沔水关云长败走麦城.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\076_第十二章徐公明大战沔水关云长败走麦城.md",
+      "sha256": "bf027d12f08998b1fa83e80b908b851e7d6389a0928cd5cd93ab2a9606da1abd",
+      "bytes": 14209,
+      "chapter_id": "ch_076",
+      "paragraph_count": 34
+    },
+    {
+      "source_file": "077_第十三章玉泉山关公显圣洛阳城曹操感神.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\077_第十三章玉泉山关公显圣洛阳城曹操感神.md",
+      "sha256": "c9a65a2a4c1080c0836691a9bc2ba7cf8500adc64573396e7398344bfa371c8f",
+      "bytes": 13362,
+      "chapter_id": "ch_077",
+      "paragraph_count": 38
+    },
+    {
+      "source_file": "078_第十四章治风疾神医身死传遗命奸雄数终.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\078_第十四章治风疾神医身死传遗命奸雄数终.md",
+      "sha256": "8431c3e27a41cd2305cd1b4ca38e78c1147560e49cae45fba11a109057e4df70",
+      "bytes": 12225,
+      "chapter_id": "ch_078",
+      "paragraph_count": 32
+    },
+    {
+      "source_file": "079_第十五章兄逼弟曹植赋诗侄陷叔刘封伏法.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\079_第十五章兄逼弟曹植赋诗侄陷叔刘封伏法.md",
+      "sha256": "a912da5ff7375adfd9f399c5a800f8288bc68481e19e3ddb01f0a747a6e9b248",
+      "bytes": 11641,
+      "chapter_id": "ch_079",
+      "paragraph_count": 43
+    },
+    {
+      "source_file": "080_第十六章曹丕废帝篡炎刘汉王正位续大统.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\080_第十六章曹丕废帝篡炎刘汉王正位续大统.md",
+      "sha256": "7cd9b1f2e619bece3acf56a55ac88cf0a85d9ace78e4fe215d8967016fab6cdf",
+      "bytes": 13181,
+      "chapter_id": "ch_080",
+      "paragraph_count": 42
+    },
+    {
+      "source_file": "081_第十七章急兄仇张飞遇害雪弟恨先主兴兵.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\081_第十七章急兄仇张飞遇害雪弟恨先主兴兵.md",
+      "sha256": "d0e340e9b5db6aa7b97bc6e5c8775c22666dd4f0dd2ef5d6abc0e0115b2c2b79",
+      "bytes": 12019,
+      "chapter_id": "ch_081",
+      "paragraph_count": 34
+    },
+    {
+      "source_file": "082_第十八章孙权降魏受九锡先主征吴赏六军.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\082_第十八章孙权降魏受九锡先主征吴赏六军.md",
+      "sha256": "edff468b096374a4d4f2f46de8420b33df2ea5b60ac7b233e42c006002b90ead",
+      "bytes": 13198,
+      "chapter_id": "ch_082",
+      "paragraph_count": 31
+    },
+    {
+      "source_file": "083_第十九章战鮮亭先主得仇人守江口书生拜大将.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\083_第十九章战鮮亭先主得仇人守江口书生拜大将.md",
+      "sha256": "de5e3e816f2ec4ec26fe4de3afad8fb577816a09fb256c4047be726a2ef665b1",
+      "bytes": 17301,
+      "chapter_id": "ch_083",
+      "paragraph_count": 53
+    },
+    {
+      "source_file": "084_第二十章陆逊营烧七百里孔明巧布八阵图.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\084_第二十章陆逊营烧七百里孔明巧布八阵图.md",
+      "sha256": "8919b6519b911f695f30458a22549cfdc4d0bbc495fef40bdac53355879d9ec8",
+      "bytes": 14869,
+      "chapter_id": "ch_084",
+      "paragraph_count": 49
+    },
+    {
+      "source_file": "085_第二十一章刘先主遣诏托孤儿诸葛亮安居平五路.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\085_第二十一章刘先主遣诏托孤儿诸葛亮安居平五路.md",
+      "sha256": "827df9682eb10140e5a70aaf9ed0dd943671e1d2ded40ebdcfc94fd3abc2c87d",
+      "bytes": 16240,
+      "chapter_id": "ch_085",
+      "paragraph_count": 43
+    },
+    {
+      "source_file": "086_第二十二章难张温秦宓逞天辩破曹丕徐盛用火攻.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\086_第二十二章难张温秦宓逞天辩破曹丕徐盛用火攻.md",
+      "sha256": "dc123a752259612a5c5b6d2e1e6cc6ebe306f147d90639ab9c52e5b41822da6a",
+      "bytes": 15634,
+      "chapter_id": "ch_086",
+      "paragraph_count": 31
+    },
+    {
+      "source_file": "087_第二十三章征南寇丞相大兴师抗天兵蛮王初受执.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\087_第二十三章征南寇丞相大兴师抗天兵蛮王初受执.md",
+      "sha256": "5622083683cf3aa12b5e9379e1e12358ada36f86f5b979030dc31b0afb8065a0",
+      "bytes": 16977,
+      "chapter_id": "ch_087",
+      "paragraph_count": 38
+    },
+    {
+      "source_file": "088_第二十四章渡泸水再缚番王识诈降三擒孟获.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\088_第二十四章渡泸水再缚番王识诈降三擒孟获.md",
+      "sha256": "5ea265d550b7a4ca5f0b6a2d022a6e572afa4ef0d42df45746eaa18999b3760e",
+      "bytes": 14736,
+      "chapter_id": "ch_088",
+      "paragraph_count": 38
+    },
+    {
+      "source_file": "089_第二十五章武乡侯四番用计南蛮王五次遭擒.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\089_第二十五章武乡侯四番用计南蛮王五次遭擒.md",
+      "sha256": "92e1ddf42574250cd0157b45ff04820e9d277939bb478bf343d9681169849eb6",
+      "bytes": 16416,
+      "chapter_id": "ch_089",
+      "paragraph_count": 41
+    },
+    {
+      "source_file": "090_第二十六章驱巨兽六破蛮兵烧藤甲七擒孟获.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\090_第二十六章驱巨兽六破蛮兵烧藤甲七擒孟获.md",
+      "sha256": "c28245f20ff0ce84da20c4af86ad7f8a765046282c24fa96ae0d9fb1c440f595",
+      "bytes": 20464,
+      "chapter_id": "ch_090",
+      "paragraph_count": 40
+    },
+    {
+      "source_file": "091_第二十七章祭泸水汉相班师伐中原武侯上表.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\091_第二十七章祭泸水汉相班师伐中原武侯上表.md",
+      "sha256": "b2cb518b8cae1e98ccb9d5f8b58241d7faf1a01e97d181b679e768b2c104966c",
+      "bytes": 16504,
+      "chapter_id": "ch_091",
+      "paragraph_count": 28
+    },
+    {
+      "source_file": "092_第二十八章赵子龙力斩五将诸葛亮智取三城.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\092_第二十八章赵子龙力斩五将诸葛亮智取三城.md",
+      "sha256": "61ed00732a70d84f22c354aea154da8f3037dedcfc31d77d479d71696761ef86",
+      "bytes": 14725,
+      "chapter_id": "ch_092",
+      "paragraph_count": 25
+    },
+    {
+      "source_file": "093_第二十九章姜伯约归降孔明武乡侯骂死王朗.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\093_第二十九章姜伯约归降孔明武乡侯骂死王朗.md",
+      "sha256": "26c1a3be2d58e13150b2dde3733d456e0dfd87ba956e10454ed298ffea5b21b9",
+      "bytes": 16106,
+      "chapter_id": "ch_093",
+      "paragraph_count": 42
+    },
+    {
+      "source_file": "094_第三十章诸葛亮乘雪破羌兵司马懿克日擒孟达.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\094_第三十章诸葛亮乘雪破羌兵司马懿克日擒孟达.md",
+      "sha256": "361d969cad6038c1a57155a6978470252fa852e563eb40300fe7a94f91ba2a7f",
+      "bytes": 16359,
+      "chapter_id": "ch_094",
+      "paragraph_count": 32
+    },
+    {
+      "source_file": "095_第三十一章马谡拒谏失街亭武侯弹琴退仲达.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\095_第三十一章马谡拒谏失街亭武侯弹琴退仲达.md",
+      "sha256": "ee93e09de1ffaa8a92f41e04146796ce71dc8a21e1e91eb5108419548ef21699",
+      "bytes": 17904,
+      "chapter_id": "ch_095",
+      "paragraph_count": 38
+    },
+    {
+      "source_file": "096_第三十二章孔明挥泪斩马谡周鲂断发赚曹休.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\096_第三十二章孔明挥泪斩马谡周鲂断发赚曹休.md",
+      "sha256": "dbd025af329845d5e27eb52abf309671f7468522267dcd2fe4698203032353bd",
+      "bytes": 13884,
+      "chapter_id": "ch_096",
+      "paragraph_count": 35
+    },
+    {
+      "source_file": "097_第三十三章讨魏国武侯再上表破曹兵姜维诈献书.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\097_第三十三章讨魏国武侯再上表破曹兵姜维诈献书.md",
+      "sha256": "ece650bcebb7b82e20638c02389685a03960f09b6cf4bbb03affcb1f74e677ef",
+      "bytes": 14470,
+      "chapter_id": "ch_097",
+      "paragraph_count": 34
+    },
+    {
+      "source_file": "098_第三十四章追汉军王双受诛袭陈仓武侯取胜.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\098_第三十四章追汉军王双受诛袭陈仓武侯取胜.md",
+      "sha256": "a8a0c339b55229a70fad6d390976b08088b4051226e28e113391c1d7188abdc6",
+      "bytes": 15221,
+      "chapter_id": "ch_098",
+      "paragraph_count": 27
+    },
+    {
+      "source_file": "099_第三十五章诸葛亮大破魏兵司马懿入寇西蜀.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\099_第三十五章诸葛亮大破魏兵司马懿入寇西蜀.md",
+      "sha256": "940d4fb03d3229e13148f7236c9a4660b387e11939ff3c97a96a2e2060dcf94c",
+      "bytes": 32556,
+      "chapter_id": "ch_099",
+      "paragraph_count": 74
+    },
+    {
+      "source_file": "100_第三十六章出陇上诸葛妆神奔剑阁张中计.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\100_第三十六章出陇上诸葛妆神奔剑阁张中计.md",
+      "sha256": "43ed16de1f62f478b27d58e7d28befa985afbe296727955690434ef28c34d70e",
+      "bytes": 16957,
+      "chapter_id": "ch_100",
+      "paragraph_count": 37
+    },
+    {
+      "source_file": "101_第三十七章司马懿占北原渭桥诸葛亮造木牛流马.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\101_第三十七章司马懿占北原渭桥诸葛亮造木牛流马.md",
+      "sha256": "713f08f43bb2388f888e6ae70f76c0ce64202a1ec503fe21a43be1e04a818271",
+      "bytes": 19672,
+      "chapter_id": "ch_101",
+      "paragraph_count": 46
+    },
+    {
+      "source_file": "102_第三十八章上方谷司马受困五太原诸葛禳星.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\102_第三十八章上方谷司马受困五太原诸葛禳星.md",
+      "sha256": "4c45e94bd54bed4e24e49e0022cf950f0bd34aaba7855a87f78f6f2b1c720c17",
+      "bytes": 17228,
+      "chapter_id": "ch_102",
+      "paragraph_count": 45
+    },
+    {
+      "source_file": "103_第三十九章陨大星汉丞相归天见木像魏都督丧胆.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\103_第三十九章陨大星汉丞相归天见木像魏都督丧胆.md",
+      "sha256": "a01437ecb49c57e12eb9917aa9d68cc1e9c50eed370e3422a77ac54b2065fd2c",
+      "bytes": 11524,
+      "chapter_id": "ch_103",
+      "paragraph_count": 40
+    },
+    {
+      "source_file": "104_第四十章武侯预伏锦囊计魏主拆取承露盘.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\104_第四十章武侯预伏锦囊计魏主拆取承露盘.md",
+      "sha256": "c60894c587ba519256f1fa8cb59b987b17b0ccac020e24c903c82447dd76952e",
+      "bytes": 16196,
+      "chapter_id": "ch_104",
+      "paragraph_count": 51
+    },
+    {
+      "source_file": "105_第四十一章公孙渊兵败死襄平司马懿诈病赚曹爽.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\105_第四十一章公孙渊兵败死襄平司马懿诈病赚曹爽.md",
+      "sha256": "49ba9bcd1d1b6279411aae2a1691fd5a9aa3b4ee4c741b7b710b36bb94ba5359",
+      "bytes": 15347,
+      "chapter_id": "ch_105",
+      "paragraph_count": 33
+    },
+    {
+      "source_file": "106_第四十二章魏主政归司马氏姜维兵败牛头山.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\106_第四十二章魏主政归司马氏姜维兵败牛头山.md",
+      "sha256": "98f225c40396c8638dd885a82f3de32462062774eb756745884b3d9d1a4cca35",
+      "bytes": 16405,
+      "chapter_id": "ch_106",
+      "paragraph_count": 40
+    },
+    {
+      "source_file": "107_第四十三章丁奉雪中奋短兵孙峻席间施密计.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\107_第四十三章丁奉雪中奋短兵孙峻席间施密计.md",
+      "sha256": "4ff3d2ff9c79b4bef97d6972116800b463ff2d47d4c49b05fe11886db38e21d7",
+      "bytes": 11938,
+      "chapter_id": "ch_107",
+      "paragraph_count": 34
+    },
+    {
+      "source_file": "108_第四十四章困司马汉将奇谋废曹芳魏家果报.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\108_第四十四章困司马汉将奇谋废曹芳魏家果报.md",
+      "sha256": "9b1c39690ff49cddd5c3503a5ce0ce583fb75efb87a12d17c49d9f36c08f4c69",
+      "bytes": 13120,
+      "chapter_id": "ch_108",
+      "paragraph_count": 37
+    },
+    {
+      "source_file": "109_第四十五章文鸯单骑退雄兵姜维背水破大敌.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\109_第四十五章文鸯单骑退雄兵姜维背水破大敌.md",
+      "sha256": "35f426c94b3c96d686afba4d219a3b7568e631eca1632a08fac413f8b2a04c90",
+      "bytes": 13704,
+      "chapter_id": "ch_109",
+      "paragraph_count": 32
+    },
+    {
+      "source_file": "110_第四十六章邓士载智败姜伯约诸葛诞义讨司马昭.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\110_第四十六章邓士载智败姜伯约诸葛诞义讨司马昭.md",
+      "sha256": "383bb1a140a136f3d166debab7b09c3eb905dc3b5a92a7badb1c4d3becbc1378",
+      "bytes": 11597,
+      "chapter_id": "ch_110",
+      "paragraph_count": 24
+    },
+    {
+      "source_file": "111_第四十七章救寿春于诠死节取长城伯约鏖兵.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\111_第四十七章救寿春于诠死节取长城伯约鏖兵.md",
+      "sha256": "f7212236eb19b8f771c7bd56ae3a88549dd9b99416d701eff75c5a7d65f3a66b",
+      "bytes": 11989,
+      "chapter_id": "ch_111",
+      "paragraph_count": 31
+    },
+    {
+      "source_file": "112_第四十八章丁奉定计斩孙鮯姜维斗阵破邓艾.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\112_第四十八章丁奉定计斩孙鮯姜维斗阵破邓艾.md",
+      "sha256": "a86b1d056cf7ba3d0a7f484b89c4ce8aa299cbdea85c0d121762a7e5e1dd9f67",
+      "bytes": 13443,
+      "chapter_id": "ch_112",
+      "paragraph_count": 26
+    },
+    {
+      "source_file": "113_第四十九章曹髦驱车死南阙姜维弃粮胜魏兵.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\113_第四十九章曹髦驱车死南阙姜维弃粮胜魏兵.md",
+      "sha256": "5aeebc2ed7df8004899896050db22ae5b26f3cfc0d8636376098d8532271df42",
+      "bytes": 11596,
+      "chapter_id": "ch_113",
+      "paragraph_count": 40
+    },
+    {
+      "source_file": "114_第五十章诏班师后主信谗托屯田姜维避祸.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\114_第五十章诏班师后主信谗托屯田姜维避祸.md",
+      "sha256": "7870e74dd1c04490852604827b111ea9cc94dd849e6439902b2f0b3f1a81e60e",
+      "bytes": 12335,
+      "chapter_id": "ch_114",
+      "paragraph_count": 33
+    },
+    {
+      "source_file": "115_第五十一章钟会分兵汉中道武侯显圣定军山.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\115_第五十一章钟会分兵汉中道武侯显圣定军山.md",
+      "sha256": "33eed85e746bf3f1b0ead8a82ce1134d22aad6d31d4790ea07c1e03d928faa1c",
+      "bytes": 13001,
+      "chapter_id": "ch_115",
+      "paragraph_count": 33
+    },
+    {
+      "source_file": "116_第五十二章邓士载偷度阴平诸葛瞻战死绵竹.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\116_第五十二章邓士载偷度阴平诸葛瞻战死绵竹.md",
+      "sha256": "b2c8c4ff2e9f3200d429202db6ef27d20392ecfdaa113718274ac5b3458421ee",
+      "bytes": 13768,
+      "chapter_id": "ch_116",
+      "paragraph_count": 34
+    },
+    {
+      "source_file": "117_第五十三章哭祖庙一王死孝入西川二士争功.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\117_第五十三章哭祖庙一王死孝入西川二士争功.md",
+      "sha256": "28bc0b16a32f193d7f24153f296b403fd9dbcb1aa4f881a04f56bce49f3fac14",
+      "bytes": 10831,
+      "chapter_id": "ch_117",
+      "paragraph_count": 34
+    },
+    {
+      "source_file": "118_第五十四章假投降巧计成虚话再受禅依样画葫芦.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\118_第五十四章假投降巧计成虚话再受禅依样画葫芦.md",
+      "sha256": "e6dc0cbf05de307cc24ca8fa85ae2da1241df38c88c2b3671cf1937a2ada27cf",
+      "bytes": 14700,
+      "chapter_id": "ch_118",
+      "paragraph_count": 53
+    },
+    {
+      "source_file": "119_第五十五章荐杜预老将献新谋降孙皓三分归一统.md",
+      "source_path": "F:\\history_sites\\三国演义全文\\三国演义_Markdown\\章节\\119_第五十五章荐杜预老将献新谋降孙皓三分归一统.md",
+      "sha256": "589f9968040fafb869d8c0a8d5cc0abdca2c93bee66c0549905c820a0f3b3a5e",
+      "bytes": 19616,
+      "chapter_id": "ch_119",
+      "paragraph_count": 81
+    }
+  ],
+  "integrity_audit": {
+    "integrated_file": "三国演义_全文.md",
+    "integrated_sha256": "ccb8042dd872f41dc90b23b9649064ed220109207603604abe982c7be130922f",
+    "catalog_file": "目录.md",
+    "catalog_sha256": "60e7141e03f7185b878c8dfd62f7ae491d4b814a49a48e60b1dfc973067c6cc7",
+    "integrated_heading_count": 119,
+    "chapter_heading_sequence_matches": true,
+    "integrated_body_matches_119_source_files_after_whitespace_normalization": 119,
+    "integrated_body_mismatch_ordinals": [],
+    "catalog_has_119_contiguous_ordinals": true,
+    "catalog_ordinals": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119
+    ],
+    "method": "Exact chapter heading order; integrated bodies compared after ignoring whitespace and the merged-file-only Markdown horizontal-rule separators. Source Markdown bytes remain unmodified."
+  },
+  "chapter_count": 119,
+  "paragraph_count": 4773,
+  "source_byte_count_total": 1789083,
+  "source_character_count_including_heading": 603004,
+  "raw_input_policy": "Read-only. Original chapter files were not copied, rewritten, normalized, or edited.",
+  "stable_id_policy": "chapter_id uses source filename ordinal; paragraph_id uses chapter_id and ordinal within that immutable source file. Source SHA and byte offsets independently detect drift."
+}

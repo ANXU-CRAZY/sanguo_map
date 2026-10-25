@@ -1,0 +1,64 @@
+{
+  "method": "All analyses consume exact-name outputs and paragraph-level event candidates from the supplied novel; only unique successful coordinates enter mapped features.",
+  "crs_source": "WGS84 lon/lat as supplied by the His-Geo adapter; historic CHGIS datum is upstream-marked ASSUMED_EPSG4326.",
+  "geocoded_place_names": 39,
+  "historical_screened_place_names": 39,
+  "historical_screen_period_status_counts": {
+    "OUTSIDE_PROJECT_ANALYSIS_WINDOW": 99,
+    "OVERLAPS_PROJECT_ANALYSIS_WINDOW": 39
+  },
+  "resolved_place_occurrence_features": 228,
+  "event_candidate_point_features": 149,
+  "war_candidate_point_features": 95,
+  "character_narrative_track_count": 18,
+  "track_semantics": "source co-mention order and straight-line display only; no historical road network was supplied.",
+  "battlefield_buffers": {
+    "阴平": {
+      "status": "COMPUTED",
+      "buffer_count": 3,
+      "source_med_km": 0.0
+    },
+    "白帝": {
+      "status": "COMPUTED",
+      "buffer_count": 3,
+      "source_med_km": 0.0
+    },
+    "安众": {
+      "status": "COMPUTED",
+      "buffer_count": 3,
+      "source_med_km": 0.0
+    }
+  },
+  "buffer_site_selection": "Use specified Red Cliffs/Guandu/Yiling names only when exact historic-gazetteer-only screening yields a unique coordinate; otherwise use the three most frequently co-mentioned unique historic-gazetteer candidates in war-trigger paragraphs and record them as fallback candidates.",
+  "kde": {
+    "status": "COMPUTED_UNVERIFIED_HISTORIC_GAZETTEER_CANDIDATES",
+    "point_count": 95,
+    "unique_coordinate_count": 28,
+    "kernel": "isotropic Gaussian, truncated at 3 bandwidths; event points equally weighted",
+    "bandwidth_km": 120.0,
+    "cell_size_km": 40.0,
+    "projection": "+proj=aea +lat_1=25 +lat_2=47 +lat_0=35 +lon_0=105 +datum=WGS84 +units=m +no_defs",
+    "area_note": "Albers equal-area grid supports comparable cell areas; projected Euclidean distances remain an approximation and are not a route or historical battlefield extent.",
+    "grid_cell_count": 2408
+  },
+  "spatial_join_method_for_buffers": "WGS84 ellipsoidal Geod.inv distances to event candidate points; buffer polygon generated in local AEQD metres.",
+  "historical_interpretation": "All mapped results are literary-text candidates. The layers do not establish real battle locations or historical event frequencies.",
+  "geojson_layers": [
+    "place_mentions_resolved.geojson",
+    "event_candidates_resolved.geojson",
+    "character_narrative_tracks.geojson",
+    "battlefield_buffers.geojson",
+    "war_candidate_kde.geojson"
+  ],
+  "geopackage": {
+    "status": "WRITTEN",
+    "path": "F:\\history_sites\\sanguo_spacetime\\data\\spatial\\sanguo_analysis.gpkg",
+    "layers": [
+      "place_mentions_resolved",
+      "event_candidates_resolved",
+      "character_narrative_tracks",
+      "battlefield_buffers",
+      "war_candidate_kde"
+    ]
+  }
+}

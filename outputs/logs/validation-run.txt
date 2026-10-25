@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "checks": {
+    "chapter_count_119": true,
+    "paragraphs_match_integrated_file": true,
+    "catalog_is_001_119": true,
+    "chapter_ids_unique": true,
+    "paragraph_ids_unique": true,
+    "source_hashes_and_byte_spans": true,
+    "hisgeo_expected_commit": true,
+    "paid_api_calls_zero": true,
+    "extraction_has_real_source_evidence": true,
+    "geocoder_results_have_historic_only_screen": true,
+    "sqlite_foreign_key_integrity": true,
+    "all_chapters_in_database": true,
+    "all_paragraphs_in_database": true,
+    "geojson_valid_place_mentions_resolved.geojson": true,
+    "geojson_valid_event_candidates_resolved.geojson": true,
+    "spatial_events_exclude_modern_only_matches": true,
+    "geojson_valid_character_narrative_tracks.geojson": true,
+    "geojson_valid_battlefield_buffers.geojson": true,
+    "geojson_valid_war_candidate_kde.geojson": true,
+    "frontend_exists": true
+  },
+  "failed": []
+}

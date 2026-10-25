@@ -1,0 +1,59 @@
+{
+  "dataset": "User-provided 2024 China provincial, prefectural, and county administrative boundaries",
+  "approval_number": "GS（2024）0650号",
+  "source_directory_as_provided": "D:\\202405更新_2024年省市县三级行政区划数据（审图号：GS（2024）0650号）\\geojson格式的原数据",
+  "source_crs": "EPSG:4490",
+  "coordinate_handling": "Source longitude/latitude values retained; Leaflet displays angular coordinates. EPSG:4490 (CGCS2000) is not mislabeled as the project gazetteer's EPSG:4326; no datum transformation is applied.",
+  "processing": "Per-feature topology-preserving Shapely simplification for browser display; original source GeoJSON files copied unchanged under source/.",
+  "historical_warning": "These are 2024 current administrative boundaries, for modern geographic orientation only; they do not represent Three Kingdoms period boundaries.",
+  "layers": {
+    "province": {
+      "source_file": "provinces.geojson",
+      "source_sha256": "841622088aff1f8126cbb8f1c0c855c50bc66cbd857d24e7162426d3ff3456da",
+      "source_feature_count": 42,
+      "output_file": "frontend/data/basemap/china_admin_2024/province.geojson",
+      "output_sha256": "8eb0f599af340638804f2723583938e2f76d27eb11ad87560a7ceeea455dbe00",
+      "output_feature_count": 42,
+      "simplification_tolerance_degrees": 0.008,
+      "source_invalid_geometries_repaired_for_display": [
+        {
+          "feature_index": 27,
+          "name": "黑龙江省",
+          "method": "shapely.make_valid on invalid source ring; raw source preserved unchanged"
+        }
+      ]
+    },
+    "city": {
+      "source_file": "cities.geojson",
+      "source_sha256": "b6878eac45c35a0c0111047566f4f25ddb244c900521510779570b963a249e0c",
+      "source_feature_count": 388,
+      "output_file": "frontend/data/basemap/china_admin_2024/city.geojson",
+      "output_sha256": "b3c05a542c919c2d23f16f697b74925505510d77e54a09671523ac4bc93ea00e",
+      "output_feature_count": 388,
+      "simplification_tolerance_degrees": 0.008,
+      "source_invalid_geometries_repaired_for_display": [
+        {
+          "feature_index": 194,
+          "name": "铁门关市",
+          "method": "shapely.make_valid on invalid source ring; raw source preserved unchanged"
+        }
+      ]
+    },
+    "county": {
+      "source_file": "counties.geojson",
+      "source_sha256": "09ecc2ddf6ddd159112da01c85d87f0d12a864e1b43b9c39bd85366f25ae4a12",
+      "source_feature_count": 2898,
+      "output_file": "frontend/data/basemap/china_admin_2024/county.geojson",
+      "output_sha256": "f3e203df73ba4ab904487cb1915ad2a04d538590970f176bafff40b1740861cb",
+      "output_feature_count": 2898,
+      "simplification_tolerance_degrees": 0.01,
+      "source_invalid_geometries_repaired_for_display": [
+        {
+          "feature_index": 399,
+          "name": "铁门关市",
+          "method": "shapely.make_valid on invalid source ring; raw source preserved unchanged"
+        }
+      ]
+    }
+  }
+}

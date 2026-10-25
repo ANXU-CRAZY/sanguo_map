@@ -1,0 +1,26 @@
+{
+  "provenance": "Project-authored seed dictionary. Canonical names and aliases are matched only when they occur verbatim in the supplied 119-chapter corpus; this file is not copied from sanguo-map.",
+  "review_status": "CURATED_SEEDS_TEXT_EVIDENCE_REQUIRED",
+  "characters": [
+    {"canonical_name":"刘备","aliases":["刘备","玄德","刘玄德","刘皇叔","刘豫州"],"faction":"蜀汉"},
+    {"canonical_name":"曹操","aliases":["曹操","孟德","曹孟德","曹阿瞒","阿瞒"],"faction":"曹魏"},
+    {"canonical_name":"孙权","aliases":["孙权","仲谋","孙仲谋","碧眼儿"],"faction":"东吴"},
+    {"canonical_name":"诸葛亮","aliases":["诸葛亮","孔明","诸葛孔明","卧龙"],"faction":"蜀汉"},
+    {"canonical_name":"关羽","aliases":["关羽","云长","关云长","关公","美髯公"],"faction":"蜀汉"},
+    {"canonical_name":"张飞","aliases":["张飞","翼德","张翼德"],"faction":"蜀汉"},
+    {"canonical_name":"赵云","aliases":["赵云","子龙","赵子龙"],"faction":"蜀汉"},
+    {"canonical_name":"周瑜","aliases":["周瑜","公瑾","周公瑾"],"faction":"东吴"},
+    {"canonical_name":"司马懿","aliases":["司马懿","仲达","司马仲达"],"faction":"曹魏/晋"},
+    {"canonical_name":"吕布","aliases":["吕布","奉先","吕奉先","温侯"],"faction":"群雄"},
+    {"canonical_name":"董卓","aliases":["董卓","仲颖","董仲颖","董太师"],"faction":"群雄"},
+    {"canonical_name":"袁绍","aliases":["袁绍","本初","袁本初"],"faction":"群雄"},
+    {"canonical_name":"袁术","aliases":["袁术","公路","袁公路"],"faction":"群雄"},
+    {"canonical_name":"孙策","aliases":["孙策","伯符","孙伯符","小霸王"],"faction":"东吴"},
+    {"canonical_name":"黄忠","aliases":["黄忠","汉升","黄汉升"],"faction":"蜀汉"},
+    {"canonical_name":"马超","aliases":["马超","孟起","马孟起"],"faction":"蜀汉"},
+    {"canonical_name":"庞统","aliases":["庞统","士元","庞士元","凤雏"],"faction":"蜀汉"},
+    {"canonical_name":"姜维","aliases":["姜维","伯约","姜伯约"],"faction":"蜀汉"},
+    {"canonical_name":"刘禅","aliases":["刘禅","阿斗","后主"],"faction":"蜀汉"},
+    {"canonical_name":"孙坚","aliases":["孙坚","文台","孙文台"],"faction":"东吴"}
+  ]
+}

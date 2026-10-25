@@ -1,0 +1,10 @@
+__pycache__/
+.pytest_cache/
+*.py[cod]
+data/gazetteers/cache/
+.env
+.env.*
+!.env.example
+.venv/
+.venv-*/
+outputs/logs/*.log

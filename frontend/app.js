@@ -1,0 +1,666 @@
+/* Local-only WebGIS client. All narrative claims come from generated local source evidence. */
+const $ = (id) => document.getElementById(id);
+const state = { page: "overview", chapters: [], places: [], placeMentions: [], placeMentionsByParagraph: new Map(), people: [], peopleMentions: [], peopleMentionsByParagraph: new Map(), events: [], times: [], geocodes: [], analysis: {}, build: {}, basemap: {}, eventGeo: null, bufferGeo: null, kdeGeo: null, trackGeo: null, selectedChapter: 1, selectedText: "", placeFilter: "all", chapterPlaying: false, chapterTimer: null, maps: {}, layers: {} };
+
+async function json(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`);
+  return response.json();
+}
+async function jsonl(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`);
+  const text = await response.text();
+  return text.split(/\r?\n/).filter(Boolean).map(line => JSON.parse(line));
+}
+function number(value) { return new Intl.NumberFormat("zh-CN").format(Number(value || 0)); }
+function escapeHTML(value) { return String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+function toast(message) { const node = $("toast"); node.textContent = message; node.classList.add("show"); clearTimeout(toast.timer); toast.timer = setTimeout(() => node.classList.remove("show"), 2400); }
+function byChapter(rows, chapter) { return rows.filter(row => row.chapter_order === chapter); }
+function paragraphOrder(event) { return event.narrative_order || event.chapter_order * 1e6 + event.paragraph_order; }
+function findChapter(id) { return state.chapters.find(row => row.chapter_id === id); }
+function geocodeByName(name) { return state.geocodes.find(row => row.historical_toponym === name); }
+
+async function loadData() {
+  const base = "/data/";
+  const [chapters, people, personMentions, placeMentions, places, events, times, geocodes, build, analysis, eventGeo, bufferGeo, kdeGeo, trackGeo, countries, rivers, lakes, adminProvince, adminCity, adminCounty] = await Promise.all([
+    json(base + "processed/chapters.json"), json(base + "extracted/characters.json"),
+    jsonl(base + "extracted/character_mentions.jsonl"), jsonl(base + "extracted/place_mentions.jsonl"),
+    json(base + "extracted/places.json"), jsonl(base + "extracted/event_candidates.jsonl"),
+    jsonl(base + "extracted/time_expressions.jsonl"), jsonl(base + "extracted/geocoding_results.jsonl"),
+    json("/outputs/logs/build_manifest.json"), json("/outputs/analysis/analysis_summary.json"),
+    json("/outputs/geojson/event_candidates_resolved.geojson"), json("/outputs/geojson/battlefield_buffers.geojson"),
+    json("/outputs/geojson/war_candidate_kde.geojson"), json("/outputs/geojson/character_narrative_tracks.geojson"),
+    json("/frontend/data/basemap/countries.geojson"),
+    json("/frontend/data/basemap/rivers.geojson"), json("/frontend/data/basemap/lakes.geojson"),
+    json("/frontend/data/basemap/china_admin_2024/province.geojson"),
+    json("/frontend/data/basemap/china_admin_2024/city.geojson"),
+    json("/frontend/data/basemap/china_admin_2024/county.geojson")
+  ]);
+  Object.assign(state, { chapters, people, peopleMentions: personMentions, placeMentions, places, events, times, geocodes, build, analysis, eventGeo, bufferGeo, kdeGeo, trackGeo, basemap: { countries, rivers, lakes, adminProvince, adminCity, adminCounty } });
+  for (const row of placeMentions) { if (!state.placeMentionsByParagraph.has(row.paragraph_id)) state.placeMentionsByParagraph.set(row.paragraph_id, []); state.placeMentionsByParagraph.get(row.paragraph_id).push(row); }
+  for (const row of personMentions) { if (!state.peopleMentionsByParagraph.has(row.paragraph_id)) state.peopleMentionsByParagraph.set(row.paragraph_id, []); state.peopleMentionsByParagraph.get(row.paragraph_id).push(row); }
+  $("load-status").textContent = "本地数据已载入";
+  $("reader-chapter-count").textContent = `${chapters.length} 章`;
+}
+
+function setupNavigation() {
+  document.querySelectorAll(".nav-item").forEach(button => button.addEventListener("click", () => showPage(button.dataset.page)));
+  $("menu-toggle").addEventListener("click", () => $("main-nav").classList.toggle("open"));
+  window.addEventListener("hashchange", () => { const name = location.hash.slice(1); if (["overview","reader","people","analysis","places","network","findings"].includes(name)) showPage(name, false); });
+}
+function showPage(name, updateHash = true) {
+  state.page = name;
+  document.querySelectorAll(".page").forEach(node => node.classList.toggle("active", node.id === `page-${name}`));
+  document.querySelectorAll(".nav-item").forEach(node => node.classList.toggle("active", node.dataset.page === name));
+  $("main-nav").classList.remove("open");
+  if (updateHash) history.replaceState(null, "", `#${name}`);
+  setTimeout(() => Object.values(state.maps).forEach(map => map?.invalidateSize()), 40);
+  if (name === "network") drawNetwork();
+  if (name === "analysis") renderAnalysisMap();
+}
+
+function mapWithGrid(elementId, center = [35, 105], zoom = 3.7) {
+  const map = L.map(elementId, { zoomControl: true, attributionControl: true, preferCanvas: true, minZoom: 3, maxZoom: 9 }).setView(center, zoom);
+  map.attributionControl.setPrefix('<a href="https://leafletjs.com">Leaflet</a>');
+  map.attributionControl.addAttribution("China admin: user-provided 2024 data (GS（2024）0650号); surrounding context: Natural Earth");
+  const surroundingCountries = { ...state.basemap.countries, features: state.basemap.countries.features.filter(feature => feature.properties.admin !== "China") };
+  const countries = L.geoJSON(surroundingCountries, {
+    style: feature => ({
+      color: feature.properties.admin === "China" ? "#687b72" : "#9b9685",
+      weight: feature.properties.admin === "China" ? 1.2 : .8,
+      opacity: .9,
+      fillColor: feature.properties.admin === "China" ? "#e8dfc9" : "#eee8d8",
+      fillOpacity: .92
+    }),
+    onEachFeature: (feature, layer) => {
+      const name = feature.properties.name_zh || feature.properties.name;
+      if (name) layer.bindTooltip(name, { sticky: true, className: "map-label" });
+    }
+  }).addTo(map);
+  const lakes = L.geoJSON(state.basemap.lakes, {
+    style: { color: "#77aab4", weight: .65, opacity: .9, fillColor: "#9bc6ce", fillOpacity: .76 },
+    onEachFeature: (feature, layer) => {
+      const name = feature.properties.name_zh || feature.properties.name;
+      if (name) layer.bindTooltip(name, { sticky: true, className: "map-label water-label" });
+    }
+  }).addTo(map);
+  const rivers = L.geoJSON(state.basemap.rivers, {
+    style: { color: "#72a9b5", weight: 1, opacity: .82 },
+    onEachFeature: (feature, layer) => {
+      const name = feature.properties.name_zh || feature.properties.name;
+      if (name) layer.bindTooltip(name, { sticky: true, className: "map-label water-label" });
+    }
+  }).addTo(map);
+  const adminGroup = L.layerGroup().addTo(map);
+  let activeAdminLevel = null;
+  const drawAdminLevel = () => {
+    const zoom = map.getZoom();
+    const level = zoom < 5 ? "province" : zoom < 7 ? "city" : "county";
+    if (level === activeAdminLevel) return;
+    activeAdminLevel = level;
+    adminGroup.clearLayers();
+    const style = level === "province"
+      ? { color: "#795c4b", weight: 1.05, opacity: .9, fillColor: "#eadfcb", fillOpacity: .045 }
+      : level === "city"
+        ? { color: "#806f60", weight: .62, opacity: .72, fillOpacity: 0 }
+      : { color: "#988a78", weight: .42, opacity: .62, fillOpacity: 0 };
+    const data = state.basemap[`admin${level[0].toUpperCase()}${level.slice(1)}`];
+    L.geoJSON(data, { style, interactive: false }).addTo(adminGroup);
+    map._adminBoundaryLevel = level;
+    map.getContainer().dataset.adminBoundaryLevel = level;
+    map.getContainer().dataset.adminBoundaryFeatureCount = String(data.features.length);
+  };
+  drawAdminLevel();
+  map.on("zoomend", drawAdminLevel);
+  L.control.layers(null, { "周边国家（Natural Earth）": countries, "中国行政区界（2024，随缩放切换）": adminGroup, "河流": rivers, "湖泊": lakes }, { collapsed: true }).addTo(map);
+  L.control.scale({ imperial: false, maxWidth: 100 }).addTo(map);
+  for (let lat = 15; lat <= 55; lat += 10) L.polyline([[lat, 72], [lat, 135]], { color: "#738b8a", weight: 0.45, opacity: 0.2, dashArray: "3 5", interactive: false }).addTo(map);
+  for (let lon = 75; lon <= 135; lon += 10) L.polyline([[15, lon], [55, lon]], { color: "#738b8a", weight: 0.45, opacity: 0.2, dashArray: "3 5", interactive: false }).addTo(map);
+  return map;
+}
+function setupMaps() {
+  state.maps.overview = mapWithGrid("overview-map", [35, 105], 3.7);
+  state.maps.tracks = mapWithGrid("track-map", [35, 105], 3.7);
+  state.maps.analysis = mapWithGrid("analysis-map", [35, 105], 3.7);
+  state.layers.overview = L.layerGroup().addTo(state.maps.overview);
+  state.layers.tracks = L.layerGroup().addTo(state.maps.tracks);
+  state.layers.analysis = L.layerGroup().addTo(state.maps.analysis);
+  state.maps.overview.on("moveend", drawOverviewMap);
+  drawOverviewMap();
+  renderAnalysisMap();
+}
+
+function metricCard(label, value, note) {
+  return `<div class="stat-card"><span>${escapeHTML(label)}</span><strong>${escapeHTML(value)}</strong><small>${escapeHTML(note || "")}</small></div>`;
+}
+function renderSummary() {
+  const ex = state.build.extraction;
+  const geo = state.build.geocoding;
+  const db = state.build.database.counts;
+  const resolved = geo.coordinate_status_counts?.OK || 0;
+  const ambiguous = geo.coordinate_status_counts?.MULTIPLE_MATCHES || 0;
+  const failed = (geo.coordinate_status_counts?.NO_MATCH || 0) + (geo.coordinate_status_counts?.COORDINATE_FAILURE || 0);
+  $("overview-stats").innerHTML = [
+    metricCard("原文覆盖", `${state.chapters.length} / 119`, "章节"),
+    metricCard("段落证据", number(ex.paragraph_count_processed), "稳定 paragraph_id"),
+    metricCard("事件候选", number(ex.event_candidate_count), "规则筛选，待审"),
+    metricCard("主路径唯一匹配", number(resolved), `${number(geo.coordinate_source_period_counts?.modern||0)} 个现代参照`),
+    metricCard("人物提及", number(ex.character_mention_count), `${state.people.length} 个种子实体`)
+  ].join("");
+  renderChapterList();
+  fillPeopleSelectors();
+  renderChapterEvents();
+  renderReaderChapter(1);
+  renderPlaces();
+  renderFindings();
+  renderBufferCards();
+  renderAnalysisAccounting({ resolved, ambiguous, failed, db });
+}
+
+function renderChapterList() {
+  const list = $("chapter-list");
+  list.replaceChildren();
+  for (const chapter of state.chapters) {
+    const button = document.createElement("button");
+    button.className = `chapter-item${chapter.source_ordinal === state.selectedChapter ? " active" : ""}`;
+    button.innerHTML = `<span>${String(chapter.source_ordinal).padStart(3,"0")}</span>${escapeHTML(chapter.original_title)}`;
+    button.addEventListener("click", () => { selectChapter(chapter.source_ordinal); showPage("reader"); });
+    list.append(button);
+  }
+}
+function selectChapter(ordinal) {
+  state.selectedChapter = Math.min(119, Math.max(1, Number(ordinal)));
+  $("chapter-range").value = String(state.selectedChapter);
+  $("chapter-value").textContent = `第 ${state.selectedChapter} / 119 章`;
+  document.querySelectorAll(".chapter-item").forEach((node, i) => node.classList.toggle("active", i + 1 === state.selectedChapter));
+  renderChapterEvents();
+  if (state.page === "reader") renderReaderChapter(state.selectedChapter);
+  drawOverviewMap();
+}
+function stopChapterPlayback() {
+  state.chapterPlaying = false;
+  if (state.chapterTimer) clearInterval(state.chapterTimer);
+  state.chapterTimer = null;
+  const button = $("chapter-play");
+  if (button) { button.textContent = "▶ 逐章播放"; button.setAttribute("aria-pressed", "false"); }
+}
+function toggleChapterPlayback() {
+  if (state.chapterPlaying) { stopChapterPlayback(); return; }
+  if (state.selectedChapter >= 119) selectChapter(1);
+  state.chapterPlaying = true;
+  const button = $("chapter-play");
+  button.textContent = "Ⅱ 暂停";
+  button.setAttribute("aria-pressed", "true");
+  state.chapterTimer = setInterval(() => {
+    if (state.selectedChapter >= 119) { stopChapterPlayback(); return; }
+    selectChapter(state.selectedChapter + 1);
+  }, 720);
+}
+function renderChapterEvents() {
+  const list = $("chapter-event-list");
+  const rows = byChapter(state.events, state.selectedChapter);
+  $("chapter-event-count").textContent = `${number(rows.length)} 条候选`;
+  list.replaceChildren();
+  rows.slice(0, 80).forEach(event => {
+    const row = document.createElement("div");
+    row.className = "list-row";
+    row.innerHTML = `<div class="list-row-title">${escapeHTML(event.trigger_surface || event.event_type_candidate)} · ${escapeHTML(event.event_type_candidate)}</div><div class="list-row-meta"><span>${escapeHTML(event.event_id)}</span><span>${escapeHTML(event.paragraph_id)}</span></div><div class="list-row-excerpt">${escapeHTML(event.candidate_summary)}</div>`;
+    row.addEventListener("click", () => selectEvent(event));
+    list.append(row);
+  });
+}
+function renderReaderChapter(ordinal, targetParagraph = null) {
+  const chapter = state.chapters.find(row => row.source_ordinal === Number(ordinal));
+  if (!chapter) return;
+  state.selectedChapter = chapter.source_ordinal;
+  $("reader-chapter-id").textContent = `${chapter.chapter_id} · SOURCE FILE ${chapter.source_filename}`;
+  $("reader-title").textContent = chapter.original_title;
+  const article = $("reader-text");
+  article.replaceChildren();
+  chapter.body.split(/\n[\t ]*\n+/).filter(text => text.length).forEach((text, index) => {
+    const p = document.createElement("p");
+    p.dataset.paragraphOrder = String(index + 1);
+    p.id = `${chapter.chapter_id}_p_${String(index + 1).padStart(4,"0")}`;
+    appendHighlighted(p, text, state.selectedText);
+    article.append(p);
+  });
+  document.querySelectorAll(".chapter-item").forEach((node, i) => node.classList.toggle("active", i + 1 === chapter.source_ordinal));
+  if (targetParagraph) {
+    const target = $(targetParagraph);
+    if (target) { target.classList.add("target-paragraph"); target.scrollIntoView({ behavior: "smooth", block: "center" }); }
+  }
+}
+function appendHighlighted(parent, text, term) {
+  if (!term) { parent.textContent = text; return; }
+  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(escaped, "gi");
+  let cursor = 0, match;
+  while ((match = regex.exec(text)) !== null) {
+    parent.append(document.createTextNode(text.slice(cursor, match.index)));
+    const mark = document.createElement("mark"); mark.textContent = match[0]; parent.append(mark);
+    cursor = match.index + match[0].length;
+    if (!match[0].length) regex.lastIndex++;
+  }
+  parent.append(document.createTextNode(text.slice(cursor)));
+}
+function searchText() {
+  const term = $("text-search").value.trim();
+  if (!term) return;
+  state.selectedText = term;
+  const hits = [];
+  for (const chapter of state.chapters) {
+    const at = chapter.body.indexOf(term);
+    if (at >= 0) hits.push({ chapter, at, excerpt: chapter.body.slice(Math.max(0, at - 45), Math.min(chapter.body.length, at + term.length + 70)).replace(/\s+/g, " ") });
+  }
+  const target = $("search-results");
+  target.replaceChildren();
+  const label = document.createElement("p"); label.className = "eyebrow"; label.textContent = `命中 ${hits.length} 个章节`; target.append(label);
+  hits.slice(0, 25).forEach(hit => {
+    const row = document.createElement("div"); row.className = "search-hit";
+    row.innerHTML = `<strong>${String(hit.chapter.source_ordinal).padStart(3,"0")} · ${escapeHTML(hit.chapter.original_title)}</strong><div>${escapeHTML(hit.excerpt)}</div>`;
+    row.addEventListener("click", () => { selectChapter(hit.chapter.source_ordinal); renderReaderChapter(hit.chapter.source_ordinal); const occurrence = hit.chapter.body.slice(0, hit.at).split(/\n[\t ]*\n+/).filter(Boolean).length + 1; const p = $(`${hit.chapter.chapter_id}_p_${String(occurrence).padStart(4,"0")}`); p?.scrollIntoView({behavior:"smooth",block:"center"}); });
+    target.append(row);
+  });
+  if (!hits.length) toast("未找到该词的原文命中");
+}
+
+function popupNode(title, subtitle, excerpt, action) {
+  const box = document.createElement("div");
+  const h = document.createElement("strong"); h.textContent = title; box.append(h);
+  const small = document.createElement("div"); small.textContent = subtitle; box.append(small);
+  const p = document.createElement("p"); p.textContent = excerpt || "无可展示的原文摘要"; box.append(p);
+  const button = document.createElement("button"); button.textContent = "查看原文证据"; button.className = "primary-button"; button.addEventListener("click", action); box.append(button);
+  return box;
+}
+function selectEvent(event) {
+  $("selection-kind").textContent = `${event.event_type_candidate} · 候选`;
+  const content = $("selection-content");
+  content.className = "selection-content";
+  content.innerHTML = `<h3>${escapeHTML(event.trigger_surface || event.event_type_candidate)} <span class="pill">${escapeHTML(event.event_review_status)}</span></h3><div class="evidence-meta"><span>${escapeHTML(event.chapter_id)}</span><span>${escapeHTML(event.paragraph_id)}</span><span>${escapeHTML(event.event_id)}</span></div><p>${escapeHTML(event.source_excerpt)}</p><div class="evidence-note">叙事候选；未进行人工事件切分或历史核验。</div><button id="read-selected" class="primary-button">跳转原文段落</button>`;
+  $("read-selected").addEventListener("click", () => jumpToParagraph(event.chapter_id, event.paragraph_id));
+}
+function selectPlace(geocode) {
+  const features = state.placeMentions.filter(row => row.historical_toponym === geocode.historical_toponym);
+  $("selection-kind").textContent = `${geocode.geocode_status} · ${features.length} 处原文`;
+  const hs=geocode.historical_screen_status||"NOT_RUN", hp=geocode.historical_screen_period_status||"UNKNOWN";
+  const hx=geocode.historical_screen_longitude==null?"未得到唯一历史库坐标":`${Number(geocode.historical_screen_longitude).toFixed(5)}, ${Number(geocode.historical_screen_latitude).toFixed(5)} · MED ${geocode.historical_screen_med_km==null?"?":Number(geocode.historical_screen_med_km).toFixed(2)+" km"}`;
+  content.innerHTML = `<h3>${escapeHTML(geocode.historical_toponym)}</h3><div class="evidence-meta"><span>主路径 ${escapeHTML(geocode.match_status || "UNKNOWN")}</span><span>${number(geocode.project_source_occurrence_count)} 次表面命中</span><span>来源时期 ${escapeHTML(geocode.matched_period||"UNKNOWN")}</span></div><p>主路径候选：${escapeHTML((geocode.matched_gazetteer || []).join("、") || "无")}</p><p>主路径坐标：${geocode.longitude == null ? "未确定" : `${Number(geocode.longitude).toFixed(5)}, ${Number(geocode.latitude).toFixed(5)}`}</p><div class="evidence-note">历史地名志独立筛查：${escapeHTML(hs)} · ${escapeHTML(hp)}；${escapeHTML(hx)}。坐标只代表 Gazetteer 候选，未核对原文含义。</div><div class="compact-list">${features.slice(0,6).map(row=>`<div class="list-row" data-paragraph="${escapeHTML(row.paragraph_id)}" data-chapter="${escapeHTML(row.chapter_id)}"><div class="list-row-meta">${escapeHTML(row.chapter_id)} · ${escapeHTML(row.paragraph_id)}</div><div class="list-row-title">${escapeHTML(row.source_file)}</div></div>`).join("")}</div>`;
+  content.querySelectorAll("[data-paragraph]").forEach(node => node.addEventListener("click", () => jumpToParagraph(node.dataset.chapter, node.dataset.paragraph)));
+}
+function jumpToParagraph(chapterId, paragraphId) {
+  const chapter = findChapter(chapterId);
+  if (!chapter) return;
+  const ordinal = chapter.source_ordinal;
+  showPage("reader");
+  renderReaderChapter(ordinal, paragraphId);
+}
+
+function drawOverviewMap() {
+  const map = state.maps.overview, group = state.layers.overview;
+  if (!map || !state.eventGeo) return;
+  group.eachLayer(layer => {
+    const tooltip = layer.getTooltip?.();
+    if (tooltip?.options?.className === "historical-place-label") {
+      layer.closeTooltip();
+      layer.unbindTooltip();
+    }
+  });
+  map.getContainer().querySelectorAll(".historical-place-label").forEach(node=>node.remove());
+  group.clearLayers();
+  const type = $("event-filter").value;
+  const personId = $("person-filter").value;
+  let visibleEventCount = 0;
+  state.eventGeo.features.forEach(feature => {
+    const props = feature.properties;
+    if (props.chapter_order > state.selectedChapter || (type !== "all" && props.event_type_candidate !== type)) return;
+    const participants = JSON.parse(props.candidate_person_ids || "[]");
+    if (personId !== "all" && !participants.includes(personId)) return;
+    visibleEventCount += 1;
+    const war = props.event_type_candidate === "war";
+    const marker = L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], { radius: war ? 6 : 4, color: war ? "#8d473e" : "#397f79", weight: 1, fillColor: war ? "#c76556" : "#66aaa0", fillOpacity: .78 });
+    marker.bindPopup(popupNode(`${props.event_type_candidate} · ${props.historical_toponym}`, `${props.chapter_id} / ${props.paragraph_id} · ${props.event_id}`, props.source_excerpt, () => jumpToParagraph(props.chapter_id, props.paragraph_id)));
+    marker.on("click", () => {
+      const event = state.events.find(row => row.event_id === props.event_id);
+      if (event) selectEvent(event);
+    });
+    marker.addTo(group);
+  });
+  const visibleNames = new Set(state.placeMentions.filter(row=>row.chapter_order<=state.selectedChapter).map(row=>row.historical_toponym));
+  const coordinateGroups = new Map();
+  for (const result of state.geocodes) {
+    if (result.geocode_status !== "OK" || result.longitude == null || !visibleNames.has(result.historical_toponym)) continue;
+    const key = `${Number(result.longitude).toFixed(5)},${Number(result.latitude).toFixed(5)}`;
+    if (!coordinateGroups.has(key)) coordinateGroups.set(key, []);
+    coordinateGroups.get(key).push(result);
+  }
+  const placeGroups = [...coordinateGroups.values()].map(rows => rows.sort((a,b)=>(b.project_source_occurrence_count||0)-(a.project_source_occurrence_count||0)));
+  placeGroups.sort((a,b)=>(b[0].project_source_occurrence_count||0)-(a[0].project_source_occurrence_count||0));
+  const zoom = map.getZoom();
+  const labelLimit = zoom < 4.1 ? 12 : zoom < 5.1 ? 36 : zoom < 6.4 ? 70 : 110;
+  const showLabels = $("place-label-toggle")?.checked !== false;
+  const viewBounds = map.getBounds();
+  let labelCount = 0;
+  placeGroups.forEach(rows => {
+    const result = rows[0];
+    const names = rows.map(row=>row.historical_toponym);
+    const ancientLabel = names.slice(0,3).join(" · ") + (names.length > 3 ? ` +${names.length-3}` : "");
+    const modern=result.matched_period==="modern";
+    const marker=L.circleMarker([result.latitude,result.longitude],{radius:4,color:modern?"#596f89":"#397f79",weight:1.15,fillColor:modern?"#8299b5":"#68b3a9",fillOpacity:.86});
+    marker.bindPopup(popupNode(names.join("、"),`${result.matched_period||"unknown"} Gazetteer 候选 · ${rows.reduce((sum,row)=>sum+(row.project_source_occurrence_count||0),0)} 次原文命中`,modern?"现代地名志候选坐标；不代表三国地名的历史位置。":"历史地名志候选坐标；地名含义与年代仍需核验。",()=>selectPlace(result)));
+    const inView = viewBounds.contains([result.latitude,result.longitude]);
+    if (showLabels && inView && labelCount < labelLimit) {
+      marker.bindTooltip(ancientLabel,{permanent:true,direction:"right",offset:[7,-2],className:"historical-place-label",opacity:.98});
+      labelCount += 1;
+    }
+    marker.addTo(group);
+  });
+  $("map-dynamic-status").textContent = `第 ${state.selectedChapter} 章及以前 · ${number(visibleEventCount)} 条事件候选 · ${number(placeGroups.length)} 处有坐标的原文地名${showLabels ? ` · 当前视野标注 ${number(labelCount)} 个古地名` : " · 地名标签已关闭"}`;
+}
+
+function fillPeopleSelectors() {
+  const personOptions = state.people.map(row => `<option value="${escapeHTML(row.character_id)}">${escapeHTML(row.canonical_name)}</option>`).join("");
+  for (const id of ["person-filter","track-person"]) {
+    const el = $(id); if (!el) continue;
+    el.innerHTML = id === "person-filter" ? `<option value="all">所有人物</option>${personOptions}` : personOptions;
+  }
+}
+function drawTracks() {
+  const group = state.layers.tracks; if (!group) return;
+  group.clearLayers();
+  const personId = $("track-person")?.value;
+  const person = state.people.find(row => row.character_id === personId);
+  const map = state.maps.tracks;
+  const container = map?.getContainer();
+  const mentions = state.peopleMentions.filter(row => row.character_ids.includes(personId));
+  const occurrences = new Map();
+  for (const personMention of mentions) {
+    const placeRows = state.placeMentionsByParagraph.get(personMention.paragraph_id) || [];
+    for (const row of placeRows) {
+      const source = geocodeByName(row.historical_toponym);
+      if (source?.historical_screen_longitude == null || source?.historical_screen_latitude == null) continue;
+      const lon = Number(source.historical_screen_longitude), lat = Number(source.historical_screen_latitude);
+      const validPeriod = ["OVERLAPS_PROJECT_ANALYSIS_WINDOW", "HISTORIC_PERIOD_UNKNOWN"].includes(source?.historical_screen_period_status);
+      if (source?.historical_screen_status !== "OK" || !validPeriod || !Number.isFinite(lon) || !Number.isFinite(lat) || Math.abs(lon) > 180 || Math.abs(lat) > 90) continue;
+      // Keep one node per named place in each source paragraph; repeated lexical spans
+      // otherwise create duplicate points and zero-length line segments.
+      const key = `${row.chapter_id}|${row.paragraph_id}|${row.historical_toponym}`;
+      if (!occurrences.has(key)) occurrences.set(key, {
+        person: person?.canonical_name || personMention.canonical_names[0] || personId,
+        row, longitude: lon, latitude: lat,
+        med: source.historical_screen_med_km,
+        periodStatus: source.historical_screen_period_status
+      });
+    }
+  }
+  const nodes = [...occurrences.values()].sort((a,b) =>
+    a.row.chapter_order - b.row.chapter_order ||
+    a.row.paragraph_order - b.row.paragraph_order ||
+    (a.row.source_char_start || 0) - (b.row.source_char_start || 0) ||
+    a.row.historical_toponym.localeCompare(b.row.historical_toponym, "zh-CN")
+  );
+  const lineCoordinates = [];
+  for (const node of nodes) {
+    const point = [node.latitude, node.longitude];
+    const previous = lineCoordinates.at(-1);
+    if (!previous || previous[0] !== point[0] || previous[1] !== point[1]) lineCoordinates.push(point);
+  }
+  if (lineCoordinates.length >= 2) {
+    L.polyline(lineCoordinates, {
+      color: "#a85c24", weight: 4, opacity: .9, dashArray: "9 6",
+      lineCap: "round", lineJoin: "round", className: "person-track-line", interactive: false
+    }).addTo(group);
+  }
+  const byCoordinate = new Map();
+  for (const node of nodes) {
+    const key = `${node.longitude.toFixed(5)},${node.latitude.toFixed(5)}`;
+    if (!byCoordinate.has(key)) byCoordinate.set(key, []);
+    byCoordinate.get(key).push(node);
+  }
+  const markerByCoordinate = new Map();
+  for (const [key, rows] of byCoordinate) {
+    const first = rows[0];
+    const names = [...new Set(rows.map(row => row.row.historical_toponym))];
+    const marker = L.circleMarker([first.latitude, first.longitude], {
+      radius: names.length > 1 ? 7 : 6, color: "#754018", weight: 2,
+      fillColor: "#efb45c", fillOpacity: .95, className: "person-track-node"
+    }).addTo(group);
+    marker.bindTooltip(names.slice(0, 3).join(" · ") + (names.length > 3 ? ` +${names.length - 3}` : ""), {
+      permanent: true, direction: "right", offset: [8, 0], className: "historical-place-label", opacity: .98
+    });
+    const evidence = rows[0];
+    marker.bindPopup(popupNode(
+      names.join("、"),
+      `${person?.canonical_name || "所选人物"} · ${rows.length} 条同段地名候选 · ${evidence.row.chapter_id} ${evidence.row.paragraph_id}`,
+      `历史地名志筛查坐标；MED ${evidence.med == null ? "未知" : `${Number(evidence.med).toFixed(2)} km`}。人物与地点在原文同段共现，尚未人工确认地点指代或实际到访。`,
+      () => jumpToParagraph(evidence.row.chapter_id, evidence.row.paragraph_id)
+    ));
+    markerByCoordinate.set(key, marker);
+  }
+  $("track-map-title").textContent = `${person?.canonical_name || "人物"} · 叙事地点顺序`;
+  $("track-status").textContent = `${number(nodes.length)} 条同段候选 · ${number(byCoordinate.size)} 个地图点${lineCoordinates.length >= 2 ? ` · ${number(lineCoordinates.length)} 个顺序轨迹节点` : nodes.length === 1 ? " · 单点证据" : " · 无法连线"}`;
+  if (container) {
+    container.dataset.trackPersonId = personId || "";
+    container.dataset.trackNodeCount = String(nodes.length);
+    container.dataset.trackLocationCount = String(byCoordinate.size);
+    container.dataset.trackMarkerCount = String(byCoordinate.size);
+    container.dataset.trackLineCount = lineCoordinates.length >= 2 ? "1" : "0";
+  }
+  $("track-records").innerHTML = nodes.map((node,index) => {
+    const key = `${node.longitude.toFixed(5)},${node.latitude.toFixed(5)}`;
+    return `<div class="list-row" role="button" tabindex="0" data-track-index="${index}" data-track-coordinate="${key}" data-chapter="${escapeHTML(node.row.chapter_id)}" data-paragraph="${escapeHTML(node.row.paragraph_id)}"><div class="list-row-title">${escapeHTML(node.person)} · ${escapeHTML(node.row.historical_toponym)}</div><div class="list-row-meta"><span>${escapeHTML(node.row.chapter_id)}</span><span>${escapeHTML(node.row.paragraph_id)}</span><span>MED ${node.med == null ? "?" : Number(node.med).toFixed(1)+"km"}</span></div><div class="list-row-excerpt">点击在地图上定位；点位弹窗可打开原文证据</div></div>`;
+  }).join("") || `<div class="empty-state">${person ? `${escapeHTML(person.canonical_name)} 当前没有符合历史地名志筛查条件的同段地点坐标。` : "请先选择人物。"} 仍可到原著阅读页检索人物名；这里不会用现代地点坐标冒充历史位置。</div>`;
+  $("track-records").querySelectorAll("[data-track-index]").forEach(node => {
+    const focusNode = () => {
+      const marker = markerByCoordinate.get(node.dataset.trackCoordinate);
+      if (!marker || !map) return;
+      const zoom = Math.max(map.getZoom(), 5.6);
+      map.setView(marker.getLatLng(), Math.min(zoom, 8), { animate: false });
+      marker.openPopup();
+    };
+    node.addEventListener("click", focusNode);
+    node.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); focusNode(); } });
+  });
+  if (map && nodes.length) {
+    const bounds = L.latLngBounds(nodes.map(node => [node.latitude, node.longitude]));
+    setTimeout(() => {
+      map.invalidateSize();
+      if (bounds.isValid()) map.fitBounds(bounds, { padding: [36, 36], maxZoom: 5.6, animate: false });
+    }, 80);
+  } else if (map) {
+    map.setView([35, 105], 3.7, { animate: false });
+    setTimeout(() => map.invalidateSize(), 40);
+  }
+}
+
+function renderAnalysisMap() {
+  const group = state.layers.analysis, map = state.maps.analysis;
+  if (!group || !map || !state.analysis.kde) return;
+  group.clearLayers();
+  const values = state.kdeGeo.features.map(feature => feature.properties.density || 0);
+  const max = Math.max(...values, 1);
+  if (state.kdeGeo.features.length) {
+    L.geoJSON(state.kdeGeo, { style: feature => {
+      const ratio = Math.max(0, Math.min(1, (feature.properties.density || 0) / max));
+      const color = ratio > .65 ? "#bd5d50" : ratio > .3 ? "#e4ad58" : "#68a99a";
+      return { color, weight: .3, fillColor: color, fillOpacity: .18 + ratio * .58 };
+    }}).addTo(group);
+  }
+  L.geoJSON(state.bufferGeo, { style: feature => ({ color: "#815b34", weight: 1.3, fillColor: "#d9ad70", fillOpacity: .10, dashArray: "4 4" }) }).addTo(group);
+  state.eventGeo.features.filter(row => row.properties.event_type_candidate === "war").forEach(feature => {
+    L.circleMarker([feature.geometry.coordinates[1],feature.geometry.coordinates[0]],{radius:4,color:"#873f3d",weight:1,fillColor:"#d36d59",fillOpacity:.85}).addTo(group);
+  });
+  $("kde-status").textContent = state.analysis.kde.status;
+  $("kde-caption").textContent = `核密度输入 ${number(state.analysis.war_candidate_point_features)} 个战争段落—地名共现点；Gaussian bandwidth ${state.analysis.kde.bandwidth_km} km，网格 ${state.analysis.kde.cell_size_km} km，输出 ${number(state.analysis.kde.grid_cell_count || 0)} 格。${state.analysis.kde.area_note || ""}`;
+}
+function renderBufferCards() {
+  const groups = new Map();
+  state.bufferGeo.features.forEach(feature => {
+    const p = feature.properties; if (!groups.has(p.battlefield_name)) groups.set(p.battlefield_name, []); groups.get(p.battlefield_name).push(p);
+  });
+  const status = state.analysis.battlefield_buffers || {};
+  const names=[...groups.keys()];
+  const known=["赤壁","官渡","夷陵"].filter(name=>!groups.has(name));
+  $("buffer-list").innerHTML = [...names,...known].map(name => {
+    const rows = groups.get(name) || [];
+    if (!rows.length) return `<div class="buffer-card"><h3>${name}</h3><div class="caption">未在历史库唯一筛查结果中匹配；未使用其他项目坐标替代。</div></div>`;
+    return `<div class="buffer-card"><h3>${name} <span class="status-tag">MED ${rows[0].origin_med_km == null ? "UNKNOWN" : Number(rows[0].origin_med_km).toFixed(1)+" km"}</span></h3><div class="buffer-radii">${rows.sort((a,b)=>a.buffer_km-b.buffer_km).map(row=>`<span class="radius-pill"><b>${row.buffer_km} km</b> · ${row.event_candidate_count_geodesic} 条候选</span>`).join("")}</div></div>`;
+  }).join("");
+}
+function renderAnalysisAccounting(counts) {
+  const items = [
+    ["战争段落候选", state.build.extraction.event_candidates_by_type?.war || 0],
+    ["具唯一坐标的战争共现", state.analysis.war_candidate_point_features],
+    ["已编码表面地名", counts.resolved], ["多候选地名", counts.ambiguous],
+    ["未匹配 / 定位失败", counts.failed], ["未运行（限额外）", state.build.geocoding.distinct_toponyms_not_run],
+    ["文本事件候选", state.analysis.event_candidate_point_features], ["人物叙事轨迹", state.analysis.character_narrative_track_count]
+  ];
+  $("analysis-accounting").innerHTML = items.map(([label,value])=>`<div class="accounting-item"><span>${escapeHTML(label)}</span><strong>${number(value)}</strong></div>`).join("");
+}
+
+function renderPlaces(filter = state.placeFilter) {
+  state.placeFilter = filter;
+  const query = ($("place-search")?.value || "").trim().toLowerCase();
+  const values = state.places.map(place => ({...place, geo: geocodeByName(place.historical_toponym)})).filter(place => {
+    const status = place.geo?.geocode_status || "NOT_RUN_LIMIT";
+    if (filter !== "all" && status !== filter) return false;
+    if (query && !`${place.historical_toponym} ${status} ${(place.geo?.matched_gazetteer || []).join(" ")}`.toLowerCase().includes(query)) return false;
+    return true;
+  });
+  const head = `<div class="place-row header"><span>原文地名</span><span>出现段落</span><span>状态</span><span>坐标 / MED</span><span>Gazetteer 候选</span></div>`;
+  const rows = values.slice(0,500).map(place => {
+    const geo = place.geo || {};
+    const status = geo.geocode_status || "NOT_RUN_LIMIT";
+    const cls = status === "OK" ? "ok" : status === "MULTIPLE_MATCHES" ? "multi" : status === "NO_MATCH" ? "fail" : "";
+    const coords = geo.longitude == null ? "—" : `${Number(geo.longitude).toFixed(3)}, ${Number(geo.latitude).toFixed(3)} · MED ${geo.maximum_error_distance_km == null ? "?" : Number(geo.maximum_error_distance_km).toFixed(1)+"km"}`;
+    return `<div class="place-row" data-place="${escapeHTML(place.historical_toponym)}"><span class="place-name">${escapeHTML(place.historical_toponym)}</span><span>${number(place.paragraph_count || 0)} 段</span><span class="status-tag ${cls}">${escapeHTML(status)}</span><span>${escapeHTML(coords)}</span><span>${escapeHTML((geo.matched_gazetteer || []).slice(0,4).join(", ") || "—")}</span></div>`;
+  }).join("");
+  $("place-table").innerHTML = head + rows + `<p class="caption">显示 ${number(Math.min(values.length,500))} / ${values.length} 条；搜索与筛选基于完整清单。</p>`;
+  $("place-table").querySelectorAll("[data-place]").forEach(node => node.addEventListener("click", () => {
+    const row = geocodeByName(node.dataset.place);
+    if (row && row.geocode_status === "OK" && row.longitude != null) state.maps.overview.setView([row.latitude,row.longitude],6);
+    if (row) selectPlace(row); else toast("该地名超出当前 His-Geo 运行限额，未计算结果");
+  }));
+}
+
+function drawNetwork() {
+  const host = $("network-graph");
+  if (!host || !state.events.length) return;
+  const personCounts = new Map(), placeCounts = new Map(), events = [];
+  for (const row of state.peopleMentions) for (const id of row.character_ids) personCounts.set(id,(personCounts.get(id)||0)+1);
+  for (const row of state.placeMentions) placeCounts.set(row.historical_toponym,(placeCounts.get(row.historical_toponym)||0)+1);
+  const people = [...personCounts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,18);
+  const places = [...placeCounts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,18);
+  const eventRows = state.events.map(event => ({event, score:event.candidate_person_ids.length+event.candidate_place_mention_ids.length})).sort((a,b)=>b.score-a.score).slice(0,36);
+  const nodes = [];
+  const personSet = new Set(people.map(row=>row[0]));
+  const placeSet = new Set(places.map(row=>row[0]));
+  const eventSet = new Set(eventRows.map(row=>row.event.paragraph_id));
+  people.forEach(([id,count],i)=>nodes.push({id:`p:${id}`,type:"person",label:state.people.find(row=>row.character_id===id)?.canonical_name||id,count,x:145,y:42+i*31,raw:id}));
+  eventRows.forEach(({event},i)=>nodes.push({id:`e:${event.event_id}`,type:"event",label:`${event.chapter_id} · ${event.trigger_surface||event.event_type_candidate}`,count:1,x:390,y:28+i*15.5,raw:event}));
+  places.forEach(([name,count],i)=>nodes.push({id:`l:${name}`,type:"place",label:name,count,x:635,y:42+i*31,raw:name}));
+  const edges = [];
+  for (const event of state.events) {
+    if (!eventSet.has(event.paragraph_id)) continue;
+    const enode = `e:${event.event_id}`;
+    const aliasesInPara = state.peopleMentionsByParagraph.get(event.paragraph_id) || [];
+    for (const mention of aliasesInPara) for (const id of mention.character_ids) if (personSet.has(id)) edges.push([enode,`p:${id}`]);
+    const placesInPara = state.placeMentionsByParagraph.get(event.paragraph_id) || [];
+    for (const mention of placesInPara) if (placeSet.has(mention.historical_toponym)) edges.push([enode,`l:${mention.historical_toponym}`]);
+  }
+  const nodeMap = new Map(nodes.map(node=>[node.id,node]));
+  const edgeSvg = edges.map(([a,b])=>{const x=nodeMap.get(a),y=nodeMap.get(b);return x&&y?`<line class="graph-edge" x1="${x.x}" y1="${x.y}" x2="${y.x}" y2="${y.y}"/>`:""}).join("");
+  const colors={person:"#d9a453",event:"#66aaa0",place:"#81a8cb"};
+  const nodeSvg = nodes.map(node=>`<g class="graph-node" tabindex="0" role="button" data-node="${escapeHTML(node.id)}"><circle cx="${node.x}" cy="${node.y}" r="${Math.max(4,Math.min(11,4+Math.sqrt(node.count||1)))}" fill="${colors[node.type]}"/><text x="${node.x+10}" y="${node.y+3}" class="${node.type}">${escapeHTML(node.label.slice(0,18))}</text></g>`).join("");
+  host.innerHTML = `<svg viewBox="0 0 780 620" role="img" aria-label="人物事件地点文本共现图"><text x="90" y="20" fill="#879aa3" font-size="9">人物</text><text x="345" y="20" fill="#879aa3" font-size="9">事件段落候选</text><text x="595" y="20" fill="#879aa3" font-size="9">原文地名</text>${edgeSvg}${nodeSvg}</svg>`;
+  host.querySelectorAll("[data-node]").forEach(node=>node.addEventListener("click",()=>showNetworkDetail(node.dataset.node)));
+}
+function showNetworkDetail(id) {
+  const [type, key] = id.split(":",2);
+  let title=key, mentions=[];
+  if (type === "p") {
+    const character=state.people.find(row=>row.character_id===key); title=character?.canonical_name||key;
+    mentions=state.peopleMentions.filter(row=>row.character_ids.includes(key)).slice(0,20).map(row=>({chapter_id:row.chapter_id,paragraph_id:row.paragraph_id,text:row.surface_form}));
+  } else if (type === "l") {
+    title=key; mentions=state.placeMentions.filter(row=>row.historical_toponym===key).slice(0,20).map(row=>({chapter_id:row.chapter_id,paragraph_id:row.paragraph_id,text:row.historical_toponym}));
+  } else {
+    const event=state.events.find(row=>row.event_id===key); if(event){title=event.event_id;mentions=[{chapter_id:event.chapter_id,paragraph_id:event.paragraph_id,text:event.source_excerpt}];}
+  }
+  const host=$("network-detail"); host.className="compact-list"; host.innerHTML=`<h3>${escapeHTML(title)}</h3><p class="evidence-note">边只表示段落共现</p>${mentions.map(row=>`<div class="list-row" data-chapter="${escapeHTML(row.chapter_id)}" data-paragraph="${escapeHTML(row.paragraph_id)}"><div class="list-row-meta">${escapeHTML(row.chapter_id)} · ${escapeHTML(row.paragraph_id)}</div><div class="list-row-excerpt">${escapeHTML(row.text)}</div></div>`).join("")}`;
+  host.querySelectorAll("[data-paragraph]").forEach(node=>node.addEventListener("click",()=>jumpToParagraph(node.dataset.chapter,node.dataset.paragraph)));
+}
+
+function renderFindings() {
+  const e=state.build.extraction,g=state.build.geocoding,analysis=state.analysis;
+  const resolved=g.coordinate_status_counts?.OK||0, multi=g.coordinate_status_counts?.MULTIPLE_MATCHES||0, noMatch=g.coordinate_status_counts?.NO_MATCH||0;
+  const cards=[
+    ["候选战争段落",number(e.event_candidates_by_type?.war||0),"触发词规则，不是人工事件集"],
+    ["主路径唯一匹配",number(resolved),`${number(g.coordinate_source_period_counts?.historic||0)} 历史库 / ${number(g.coordinate_source_period_counts?.modern||0)} 现代`],
+    ["多候选保留",number(multi),"未强制选址"],
+    ["KDE 输入点",number(analysis.war_candidate_point_features),analysis.kde.status]
+  ];
+  $("findings-summary").innerHTML=cards.map(row=>`<div class="finding-card"><strong>${row[1]}</strong><span>${row[0]} · ${row[2]}</span></div>`).join("");
+  $("supported-questions").innerHTML=[
+    `指定 EPUB 转换文本包含 ${state.chapters.length} 个章节，正文与整合版逐章通过对比。`,
+    `哪些地名表面形式在何章何段落出现，并对应哪些现代或历史 CHGIS 候选。`,
+    `规则战争段落候选中，有多少与唯一历史地名志候选同段共现；其有效年代可能未知。`,
+    `主要人物名与地名在小说叙事顺序中的段落共现。`
+  ].map(text=>`<li>${escapeHTML(text)}</li>`).join("");
+  $("unsupported-questions").innerHTML=[
+    "不能据此确认小说事件确曾发生、叙事年份等于史实年代，或角色确实走过连线。",
+    "不能将自动地名志匹配当作同名历史地点身份核验；CHGIS 坐标 datum 有来源假设。",
+    "不能声称精确道路最短路径、历史政区边界、人物出生地、生卒年或寿命分布。",
+    "规则候选未经过人工标注评测，不能把抽取数量当作准确率或完整人物/事件目录。"
+  ].map(text=>`<li>${escapeHTML(text)}</li>`).join("");
+  const source=$("source-snapshot");
+  const entries=[
+    ["His-Geo reproduction",g.hisgeo_commit], ["Official source commit",g.hisgeo_official_commit],
+    ["CHGIS TGAZ SHA-256",g.historic_tgaz_source_sha256], ["CRS provenance",g.historic_crs_statement],
+    ["Geocoder mode",g.geocoder_mode], ["Original corpus",state.build.corpus.source_root],
+    ["Paid inference",String(g.paid_api_calls===0?"0 calls":"see build manifest")], ["Source file count",String(state.build.corpus.chapter_count)]
+  ];
+  source.innerHTML=entries.map(([key,value])=>`<div class="source-value"><span>${escapeHTML(key)}</span><code>${escapeHTML(value)}</code></div>`).join("");
+}
+
+function selectMapResult(feature) {
+  const props=feature.properties;
+  const event=state.events.find(row=>row.event_id===props.event_id);
+  if(event) selectEvent(event);
+}
+function bindControls() {
+  $("chapter-range").addEventListener("input",event=>selectChapter(event.target.value));
+  $("chapter-play").addEventListener("click",toggleChapterPlayback);
+  $("chapter-prev").addEventListener("click",()=>selectChapter(state.selectedChapter-1));
+  $("chapter-next").addEventListener("click",()=>selectChapter(state.selectedChapter+1));
+  $("place-label-toggle").addEventListener("change",drawOverviewMap);
+  $("event-filter").addEventListener("change",drawOverviewMap);
+  $("person-filter").addEventListener("change",drawOverviewMap);
+  $("search-button").addEventListener("click",searchText);
+  $("text-search").addEventListener("keydown",event=>{if(event.key==="Enter")searchText()});
+  $("track-person").addEventListener("change",drawTracks);
+  $("place-search").addEventListener("input",()=>renderPlaces());
+  document.querySelectorAll("[data-place-filter]").forEach(button=>button.addEventListener("click",()=>{
+    document.querySelectorAll("[data-place-filter]").forEach(node=>node.classList.toggle("active",node===button)); renderPlaces(button.dataset.placeFilter);
+  }));
+  document.querySelectorAll(".nav-item").forEach(button=>button.addEventListener("click",()=>{if(button.dataset.page==="people")drawTracks()}));
+}
+
+async function main() {
+  try {
+    await loadData();
+    setupNavigation();
+    setupMaps();
+    renderSummary();
+    bindControls();
+    const initial=location.hash.slice(1);
+    if (["overview","reader","people","analysis","places","network","findings"].includes(initial)) showPage(initial,false);
+    drawTracks(); drawNetwork();
+    if (state.chapters.length !== 119) throw new Error(`Expected 119 chapters, loaded ${state.chapters.length}`);
+  } catch (error) {
+    console.error(error);
+    $("load-status").textContent = "本地数据读取失败";
+    $("load-status").style.color = "#d27761";
+    toast(`数据加载失败：${error.message}`);
+  }
+}
+document.addEventListener("DOMContentLoaded", main);

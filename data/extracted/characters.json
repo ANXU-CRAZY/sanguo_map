@@ -1,0 +1,294 @@
+[
+  {
+    "character_id": "person_daf7b56cd3ae",
+    "canonical_name": "刘备",
+    "aliases": [
+      "刘备",
+      "刘玄德",
+      "刘皇叔",
+      "刘豫州",
+      "玄德"
+    ],
+    "faction_seed": "蜀汉",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_4fbe01ab8d14",
+    "canonical_name": "曹操",
+    "aliases": [
+      "孟德",
+      "曹孟德",
+      "曹操",
+      "曹阿瞒",
+      "阿瞒"
+    ],
+    "faction_seed": "曹魏",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_2d0b5eef6609",
+    "canonical_name": "孙权",
+    "aliases": [
+      "仲谋",
+      "孙仲谋",
+      "孙权",
+      "碧眼儿"
+    ],
+    "faction_seed": "东吴",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_53081486f9db",
+    "canonical_name": "诸葛亮",
+    "aliases": [
+      "卧龙",
+      "孔明",
+      "诸葛亮",
+      "诸葛孔明"
+    ],
+    "faction_seed": "蜀汉",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_4b97cac39000",
+    "canonical_name": "关羽",
+    "aliases": [
+      "云长",
+      "关云长",
+      "关公",
+      "关羽",
+      "美髯公"
+    ],
+    "faction_seed": "蜀汉",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_95264f699dc4",
+    "canonical_name": "张飞",
+    "aliases": [
+      "张翼德",
+      "张飞",
+      "翼德"
+    ],
+    "faction_seed": "蜀汉",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_d949c9c8d528",
+    "canonical_name": "赵云",
+    "aliases": [
+      "子龙",
+      "赵云",
+      "赵子龙"
+    ],
+    "faction_seed": "蜀汉",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_ff0ae9c2a3b3",
+    "canonical_name": "周瑜",
+    "aliases": [
+      "公瑾",
+      "周公瑾",
+      "周瑜"
+    ],
+    "faction_seed": "东吴",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_32ae32453c0b",
+    "canonical_name": "司马懿",
+    "aliases": [
+      "仲达",
+      "司马仲达",
+      "司马懿"
+    ],
+    "faction_seed": "曹魏/晋",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_990961b2ffc3",
+    "canonical_name": "吕布",
+    "aliases": [
+      "吕奉先",
+      "吕布",
+      "奉先",
+      "温侯"
+    ],
+    "faction_seed": "群雄",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_96633bbf689f",
+    "canonical_name": "董卓",
+    "aliases": [
+      "仲颖",
+      "董仲颖",
+      "董卓",
+      "董太师"
+    ],
+    "faction_seed": "群雄",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_653eea8eb9c6",
+    "canonical_name": "袁绍",
+    "aliases": [
+      "本初",
+      "袁本初",
+      "袁绍"
+    ],
+    "faction_seed": "群雄",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_375995287c1b",
+    "canonical_name": "袁术",
+    "aliases": [
+      "公路",
+      "袁公路",
+      "袁术"
+    ],
+    "faction_seed": "群雄",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_0278350322db",
+    "canonical_name": "孙策",
+    "aliases": [
+      "伯符",
+      "孙伯符",
+      "孙策",
+      "小霸王"
+    ],
+    "faction_seed": "东吴",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_c9065395c9a7",
+    "canonical_name": "黄忠",
+    "aliases": [
+      "汉升",
+      "黄忠",
+      "黄汉升"
+    ],
+    "faction_seed": "蜀汉",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_63655267babc",
+    "canonical_name": "马超",
+    "aliases": [
+      "孟起",
+      "马孟起",
+      "马超"
+    ],
+    "faction_seed": "蜀汉",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_d04269a972ec",
+    "canonical_name": "庞统",
+    "aliases": [
+      "凤雏",
+      "士元",
+      "庞士元",
+      "庞统"
+    ],
+    "faction_seed": "蜀汉",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_0c61d8ccd987",
+    "canonical_name": "姜维",
+    "aliases": [
+      "伯约",
+      "姜伯约",
+      "姜维"
+    ],
+    "faction_seed": "蜀汉",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_93037d718c91",
+    "canonical_name": "刘禅",
+    "aliases": [
+      "刘禅",
+      "后主",
+      "阿斗"
+    ],
+    "faction_seed": "蜀汉",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  },
+  {
+    "character_id": "person_1fbb0e34373c",
+    "canonical_name": "孙坚",
+    "aliases": [
+      "孙坚",
+      "孙文台",
+      "文台"
+    ],
+    "faction_seed": "东吴",
+    "source_provenance": "project_authored_alias_seed_dictionary; evidence accepted only from direct corpus matches",
+    "identity_status": "CURATED_SEED_UNVERIFIED_AS_HISTORICAL_IDENTITY",
+    "birth_year": null,
+    "death_year": null
+  }
+]

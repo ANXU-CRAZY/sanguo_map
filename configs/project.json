@@ -1,0 +1,11 @@
+{
+  "corpus_root": "F:/history_sites/三国演义全文/三国演义_Markdown",
+  "hisgeo_root": "F:/history_sites/hisgeo_reproduction",
+  "expected_hisgeo_commit": "bb99915ff4323669fe3535fad17de67e95f2870b",
+  "geocoder_mode": "paper_faithful",
+  "maximum_distinct_toponyms": 500,
+  "battle_kde_bandwidth_km": 120,
+  "battle_kde_cell_km": 40,
+  "battle_buffer_radii_km": [10, 30, 50],
+  "historical_analysis_period": [-220, 280]
+}

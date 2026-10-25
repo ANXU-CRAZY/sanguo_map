@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101d2a">
+  <title>三国演义 · 历史时空分析</title>
+  <link rel="icon" type="image/svg+xml" href="/frontend/favicon.svg">
+  <link rel="stylesheet" href="/frontend/assets/vendor/leaflet.css">
+  <link rel="stylesheet" href="/frontend/style.css?v=2">
+  <style>.target-paragraph{outline:1px solid #d9a453;border-left:3px solid #d9a453;background:#d9a45312;padding:8px;margin-left:-8px;border-radius:3px}</style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#overview" aria-label="返回时空总览">
+      <span class="brand-mark">疆</span>
+      <span><strong>三国时空</strong><small>SPATIAL HUMANITIES LAB</small></span>
+    </a>
+    <div class="source-badge"><span class="live-dot"></span><span>119 章 · 原文驱动</span></div>
+    <button id="menu-toggle" class="menu-toggle" aria-label="打开导航">☰</button>
+    <nav id="main-nav" aria-label="主导航">
+      <button class="nav-item active" data-page="overview">时空总览</button>
+      <button class="nav-item" data-page="reader">原著阅读</button>
+      <button class="nav-item" data-page="people">人物行踪</button>
+      <button class="nav-item" data-page="analysis">战争分析</button>
+      <button class="nav-item" data-page="places">历史地名</button>
+      <button class="nav-item" data-page="network">知识网络</button>
+      <button class="nav-item" data-page="findings">研究发现</button>
+    </nav>
+    <div class="header-meta"><span class="meta-key">数据状态</span><span id="load-status">正在读取本地数据…</span></div>
+  </header>
+
+  <main>
+    <section class="page active" id="page-overview">
+      <div class="page-heading">
+        <div><p class="eyebrow">TEXT · PLACE · NARRATIVE ORDER</p><h1>小说叙事的空间结构</h1><p class="lede">从原文段落出发，查看地名命中、事件候选和可追溯的空间位置。</p></div>
+        <div class="mode-chip"><span>当前编码路径</span><strong>paper_faithful</strong><small>无模型 API 推理</small></div>
+      </div>
+      <div class="stat-grid" id="overview-stats"></div>
+      <div class="overview-grid">
+        <section class="panel map-panel">
+          <div class="panel-head map-tools">
+            <div><h2>地名与事件候选</h2><p>点位仅表示地名志匹配坐标，历史含义仍待核验</p></div>
+            <div class="map-controls">
+              <label>候选类型<select id="event-filter"><option value="all">全部类型</option><option value="war">战争</option><option value="movement">行军 / 移动</option><option value="politics">政治</option><option value="alliance">结盟</option><option value="appointment">任职</option><option value="death">死亡</option></select></label>
+              <label>人物<select id="person-filter"><option value="all">所有人物</option></select></label>
+            </div>
+          </div>
+          <div id="overview-map" class="map-canvas" role="application" aria-label="历史地名候选互动地图"></div>
+          <div class="map-legend"><span><i class="legend-dot war-dot"></i>战争事件候选</span><span><i class="legend-dot place-dot"></i>历史地名候选坐标</span><label class="label-toggle"><input id="place-label-toggle" type="checkbox" checked>古地名标注</label><span class="legend-note">标注取自原文地名；现代边界仅作方位参照，不是三国疆域</span></div>
+          <div class="timeline-control"><div class="timeline-label"><span>叙事时间轴 · 播放会逐章更新地图与证据列表</span><strong id="chapter-value">第 1 / 119 章</strong></div><div class="timeline-actions"><button id="chapter-prev" type="button" title="上一章">上一章</button><input id="chapter-range" type="range" min="1" max="119" value="1" aria-label="小说章节时间轴"><button id="chapter-next" type="button" title="下一章">下一章</button><button id="chapter-play" class="chapter-play" type="button" aria-pressed="false">▶ 逐章播放</button></div><div class="timeline-ends"><span>开篇</span><span>三分归一统</span></div><p id="map-dynamic-status" class="map-dynamic-status" aria-live="polite"></p></div>
+        </section>
+        <aside class="panel detail-panel">
+          <div class="panel-head"><div><p class="eyebrow">EVIDENCE PANEL</p><h2>原文证据</h2></div><span class="pill" id="selection-kind">等待选择</span></div>
+          <div id="selection-content" class="empty-state"><span class="empty-icon">⌖</span><p>选择地图点位或事件候选，查看原文段落、章节、匹配状态与坐标来源。</p></div>
+          <div class="panel-divider"></div>
+          <div class="side-list-head"><h3>当前章节的空间候选</h3><span id="chapter-event-count">0 条</span></div>
+          <div id="chapter-event-list" class="compact-list"></div>
+        </aside>
+      </div>
+      <div class="notice-bar"><strong>解读边界</strong><span>小说中的地点与事件不是历史事实标注。未唯一匹配的候选不显示为确定坐标；地图连线仅按叙事顺序连接，不代表古道或真实行军路线。</span></div>
+    </section>
+
+    <section class="page" id="page-reader">
+      <div class="page-heading compact-heading"><div><p class="eyebrow">SOURCE TEXT · 119 CHAPTERS</p><h1>原著阅读与全文检索</h1><p class="lede">显示用户提供的 EPUB 转换文本；保留原始章名和 001–119 稳定顺序。</p></div></div>
+      <div class="reader-layout">
+        <aside class="panel chapter-sidebar"><div class="panel-head"><div><p class="eyebrow">TABLE OF CONTENTS</p><h2>章节目录</h2></div><span class="pill" id="reader-chapter-count">119 章</span></div><div id="chapter-list" class="chapter-list"></div></aside>
+        <section class="panel reader-panel"><div class="reader-toolbar"><div><p id="reader-chapter-id" class="eyebrow"></p><h2 id="reader-title">选择一章</h2></div><div class="reader-search"><label class="sr-only" for="text-search">全文检索</label><input id="text-search" type="search" placeholder="搜索原文关键词…"><button id="search-button">检索</button></div></div><div id="search-results" class="search-results" aria-live="polite"></div><article id="reader-text" class="reader-text"><p class="empty-state">章节正文将在此显示。</p></article></section>
+      </div>
+    </section>
+
+    <section class="page" id="page-people">
+      <div class="page-heading"><div><p class="eyebrow">CHARACTER · PLACE CO-MENTIONS</p><h1>人物活动的叙事顺序</h1><p class="lede">同段人物与地点共现用于生成候选活动节点，不等同于实际到访记录。</p></div></div>
+      <div class="people-toolbar panel"><label for="track-person">选择人物<select id="track-person"></select></label><span class="pill" id="track-status" aria-live="polite">正在生成单人轨迹</span><span class="muted">选择人物后自动更新；节点按原文章节顺序连接</span></div>
+      <div class="people-grid"><section class="panel"><div class="panel-head"><div><p class="eyebrow">ONE PERSON · NARRATIVE ORDER</p><h2 id="track-map-title">人物叙事轨迹</h2></div></div><div id="track-map" class="map-canvas"></div><p class="caption">每个点来自该人物与地名的同段共现，标签保留原文古地名词面。连线按章节顺序表示叙事地点序列，不证明人物实际到访或行军路线；点击节点可查看原文出处。</p></section><section class="panel"><div class="panel-head"><div><p class="eyebrow">SOURCE LINKS</p><h2>叙事地点与出处</h2></div></div><div id="track-records" class="compact-list tall-list"></div></section></div>
+    </section>
+
+    <section class="page" id="page-analysis">
+      <div class="page-heading"><div><p class="eyebrow">SPATIAL ANALYSIS · EXPLORATORY</p><h1>战争事件的空间探索</h1><p class="lede">仅对原文战争触发词、段落共现地名與唯一 geocode 结果进行描述性计算。</p></div></div>
+      <div class="notice-bar warning"><strong>方法限制</strong><span>热度表示小说中被规则识别的段落候选密度，不能解释为真实历史战争频率。战场缓冲半径是分析参数，不是史料给出的影响范围。</span></div>
+      <div class="analysis-grid"><section class="panel"><div class="panel-head"><div><p class="eyebrow">GAUSSIAN KERNEL</p><h2>战争候选核密度</h2></div><span id="kde-status" class="pill">读取中</span></div><div id="analysis-map" class="map-canvas analysis-map"></div><div class="legend-scale"><span>低</span><i></i><span>高</span></div><p id="kde-caption" class="caption"></p></section><section class="panel"><div class="panel-head"><div><p class="eyebrow">LOCAL AEQD · METRES</p><h2>战场多尺度缓冲</h2></div></div><div id="buffer-list" class="buffer-list"></div><p class="caption">缓冲多边形在以点位为中心的局部 AEQD 米制投影中构造；范围内事件数以 WGS84 椭球测地距离计算。</p></section></div>
+      <div class="panel analysis-table-panel"><div class="panel-head"><div><p class="eyebrow">INPUT ACCOUNTING</p><h2>参与分析的真实记录</h2></div></div><div id="analysis-accounting" class="accounting-grid"></div></div>
+    </section>
+
+    <section class="page" id="page-places">
+      <div class="page-heading"><div><p class="eyebrow">TOPONYM · CANDIDATE · MED</p><h1>历史地名探索</h1><p class="lede">地名来自原文与冻结 His-Geo CHGIS 地名志精确表面匹配；一名多址保留为候选。</p></div></div>
+      <section class="panel place-explorer"><div class="explorer-tools"><input id="place-search" type="search" placeholder="检索地名、章节或状态…"><div class="filter-tabs"><button class="filter-pill active" data-place-filter="all">全部</button><button class="filter-pill" data-place-filter="OK">唯一坐标</button><button class="filter-pill" data-place-filter="MULTIPLE_MATCHES">多候选</button><button class="filter-pill" data-place-filter="NO_MATCH">未匹配</button><button class="filter-pill" data-place-filter="NOT_RUN_LIMIT">未运行</button></div></div><div id="place-table" class="place-table"></div></section>
+    </section>
+
+    <section class="page" id="page-network">
+      <div class="page-heading"><div><p class="eyebrow">CO-MENTION GRAPH · PROVENANCE LINKS</p><h1>时空知识网络</h1><p class="lede">边表示同一事件候选段落中的文本共现，不代表已证实参与、亲属或政治关系。</p></div></div>
+      <div class="network-layout"><section class="panel graph-panel"><div class="panel-head"><div><p class="eyebrow">NODES · PARAGRAPHS · SOURCES</p><h2>人物—事件—地点候选关联</h2></div><span class="pill">共现关系</span></div><div id="network-graph" class="network-graph"></div><div class="graph-legend"><span><i class="person-key"></i>人物</span><span><i class="event-key"></i>事件段落</span><span><i class="place-key"></i>地名</span></div></section><aside class="panel"><div class="panel-head"><div><p class="eyebrow">NODE EVIDENCE</p><h2>节点详情</h2></div></div><div id="network-detail" class="empty-state">点击网络节点查看原文证据。</div></aside></div>
+    </section>
+
+    <section class="page" id="page-findings">
+      <div class="page-heading"><div><p class="eyebrow">OBSERVATIONS · TRACEABLE · PROVISIONAL</p><h1>可核验的研究观察</h1><p class="lede">本页呈现数据覆盖与规则结果，不将叙事候选包装成历史发现。</p></div></div>
+      <div id="findings-summary" class="findings-grid"></div>
+      <div class="panel"><div class="panel-head"><div><p class="eyebrow">EVIDENCE FIRST</p><h2>当前可以回答与不能回答的问题</h2></div></div><div class="finding-columns"><div><h3>当前数据支持</h3><ul id="supported-questions"></ul></div><div><h3>当前数据不支持</h3><ul id="unsupported-questions"></ul></div></div></div>
+      <div class="panel source-card"><div><p class="eyebrow">SOURCE SNAPSHOT</p><h2>数据与算法版本</h2></div><div id="source-snapshot"></div></div>
+    </section>
+  </main>
+
+  <footer><span>三国时空 · 本地科研原型</span><span>小说叙事 ≠ 历史事实 · 所有位置均保留来源与审查状态</span><a href="/docs/FINAL_PROJECT_REPORT.md">项目方法与质量报告</a></footer>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="/frontend/assets/vendor/leaflet.js"></script>
+  <script src="/frontend/app.js?v=3"></script>
+</body>
+</html>
