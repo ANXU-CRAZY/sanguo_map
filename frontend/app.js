@@ -4,7 +4,15 @@ const PAGE_LABELS = { overview: "时空总览", reader: "原著阅读", people: 
 const EVENT_LABELS = { war: "战争", movement: "行军", politics: "政治", alliance: "结盟", appointment: "任职", death: "死亡" };
 const STATUS_LABELS = { OK: "唯一坐标", MULTIPLE_MATCHES: "多候选", NO_MATCH: "未匹配", NOT_RUN_LIMIT: "未运行", COORDINATE_FAILURE: "坐标异常" };
 const MAP_HOME = { center: [33.5, 110], zoom: 4.5 };
+const ui = { pageScroll: {}, readerFont: 18, placePage: 1, pageSize: 50, graphSelection: null, trackIndex: -1, trackBounds: null, trackLabels: [], trackMarkers: new Map(), selectedEvent: null };
 function icon(name) { return `<svg class="icon" aria-hidden="true"><use href="#icon-${name}"/></svg>`; }
+function bindRecordAction(node, action) {
+  node.tabIndex = 0;
+  node.setAttribute("role", "button");
+  node.addEventListener("click", action);
+  node.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); action(); } });
+}
+function paragraphText(id) { return state.paragraphTexts?.get(id) || ""; }
 const state = { page: "overview", chapters: [], places: [], placeMentions: [], placeMentionsByParagraph: new Map(), people: [], peopleMentions: [], peopleMentionsByParagraph: new Map(), events: [], times: [], geocodes: [], analysis: {}, build: {}, basemap: {}, eventGeo: null, bufferGeo: null, kdeGeo: null, trackGeo: null, selectedChapter: 1, selectedText: "", placeFilter: "all", chapterPlaying: false, chapterTimer: null, maps: {}, layers: {} };
 
 async function json(url) {
@@ -24,7 +32,7 @@ function toast(message) { const node = $("toast"); node.textContent = message; n
 function byChapter(rows, chapter) { return rows.filter(row => row.chapter_order === chapter); }
 function paragraphOrder(event) { return event.narrative_order || event.chapter_order * 1e6 + event.paragraph_order; }
 function findChapter(id) { return state.chapters.find(row => row.chapter_id === id); }
-function geocodeByName(name) { return state.geocodes.find(row => row.historical_toponym === name); }
+function geocodeByName(name) { return state.geocodeIndex?.get(name) || state.geocodes.find(row => row.historical_toponym === name); }
 
 async function loadData() {
   const base = "/data/";
@@ -43,6 +51,11 @@ async function loadData() {
     json("/frontend/data/basemap/china_admin_2024/county.geojson")
   ]);
   Object.assign(state, { chapters, people, peopleMentions: personMentions, placeMentions, places, events, times, geocodes, build, analysis, eventGeo, bufferGeo, kdeGeo, trackGeo, basemap: { countries, rivers, lakes, adminProvince, adminCity, adminCounty } });
+  state.paragraphTexts = new Map();
+  state.geocodeIndex = new Map(geocodes.map(row => [row.historical_toponym,row]));
+  for (const chapter of chapters) chapter.body.split(/\n[\t ]*\n+/).filter(text => text.length).forEach((text, index) => {
+    state.paragraphTexts.set(`${chapter.chapter_id}_p_${String(index + 1).padStart(4,"0")}`, text);
+  });
   for (const row of placeMentions) { if (!state.placeMentionsByParagraph.has(row.paragraph_id)) state.placeMentionsByParagraph.set(row.paragraph_id, []); state.placeMentionsByParagraph.get(row.paragraph_id).push(row); }
   for (const row of personMentions) { if (!state.peopleMentionsByParagraph.has(row.paragraph_id)) state.peopleMentionsByParagraph.set(row.paragraph_id, []); state.peopleMentionsByParagraph.get(row.paragraph_id).push(row); }
   $("load-status").textContent = "本地数据已载入";
@@ -63,10 +76,19 @@ function setupNavigation() {
       $("menu-toggle").setAttribute("aria-label", "打开导航");
     }
   });
+  document.addEventListener("click", event => {
+    if (!event.target.closest(".topbar") && $("main-nav").classList.contains("open")) {
+      $("main-nav").classList.remove("open");
+      $("menu-toggle").setAttribute("aria-expanded", "false");
+      $("menu-toggle").setAttribute("aria-label", "打开导航");
+    }
+  });
   window.addEventListener("hashchange", () => { const name = location.hash.slice(1); if (["overview","reader","people","analysis","places","network","findings"].includes(name)) showPage(name, false); });
 }
 function showPage(name, updateHash = true) {
   if (!PAGE_LABELS[name]) return;
+  const previous = state.page;
+  if (previous !== name) ui.pageScroll[previous] = window.scrollY;
   state.page = name;
   if (name !== "overview") stopChapterPlayback();
   $("current-page-label").textContent = PAGE_LABELS[name];
@@ -87,6 +109,7 @@ function showPage(name, updateHash = true) {
   if (name === "overview") selectChapter(state.selectedChapter);
   if (name === "reader") renderReaderChapter(state.selectedChapter);
   if (name === "people") drawTracks();
+  if (previous !== name) window.scrollTo({ top: ui.pageScroll[name] || 0, behavior: "instant" });
 }
 
 function mapWithGrid(elementId, center = [35, 105], zoom = 3.7) {
@@ -165,6 +188,7 @@ function setupMaps() {
   state.layers.tracks = L.layerGroup().addTo(state.maps.tracks);
   state.layers.analysis = L.layerGroup().addTo(state.maps.analysis);
   state.maps.overview.on("moveend", drawOverviewMap);
+  state.maps.tracks.on("moveend", refreshTrackLabels);
   drawOverviewMap();
   renderAnalysisMap();
 }
@@ -200,20 +224,33 @@ function renderSummary() {
 function renderChapterList() {
   const list = $("chapter-list");
   list.replaceChildren();
-  for (const chapter of state.chapters) {
+  const query = ($("chapter-search").value || "").trim().toLowerCase();
+  const chapters = state.chapters.filter(chapter => `${String(chapter.source_ordinal).padStart(3,"0")} ${chapter.original_title}`.toLowerCase().includes(query));
+  $("reader-chapter-count").textContent = `${chapters.length} / ${state.chapters.length} 章`;
+  for (const chapter of chapters) {
     const button = document.createElement("button");
     button.className = `chapter-item${chapter.source_ordinal === state.selectedChapter ? " active" : ""}`;
-    button.innerHTML = `<span>${String(chapter.source_ordinal).padStart(3,"0")}</span>${escapeHTML(chapter.original_title)}`;
-    button.addEventListener("click", () => { selectChapter(chapter.source_ordinal); showPage("reader"); });
+    button.dataset.chapterOrder = String(chapter.source_ordinal);
+    button.title = chapter.original_title;
+    button.setAttribute("aria-current", chapter.source_ordinal === state.selectedChapter ? "true" : "false");
+    button.innerHTML = `<span>${String(chapter.source_ordinal).padStart(3,"0")}</span><span class="chapter-item-title">${escapeHTML(chapter.original_title.replace(/^第[^\s章回]+[章回]\s*/, ""))}</span>`;
+    button.addEventListener("click", () => {
+      selectChapter(chapter.source_ordinal); showPage("reader");
+      document.querySelector(".reader-toolbar").scrollIntoView({block:"start"});
+    });
     list.append(button);
   }
+  if (!chapters.length) list.innerHTML = `<div class="empty-state compact-empty"><p>没有找到这个章节。<br>试试序号或章名中的词语。</p></div>`;
 }
 function selectChapter(ordinal) {
   state.selectedChapter = Math.min(119, Math.max(1, Number(ordinal)));
   $("chapter-range").value = String(state.selectedChapter);
   $("chapter-value").textContent = `第 ${state.selectedChapter} / 119 章`;
   updateChapterPresentation();
-  document.querySelectorAll(".chapter-item").forEach((node, i) => node.classList.toggle("active", i + 1 === state.selectedChapter));
+  document.querySelectorAll(".chapter-item").forEach(node => {
+    const selected = Number(node.dataset.chapterOrder) === state.selectedChapter;
+    node.classList.toggle("active", selected); node.setAttribute("aria-current", String(selected));
+  });
   renderChapterEvents();
   if (state.page === "reader") renderReaderChapter(state.selectedChapter);
   drawOverviewMap();
@@ -241,17 +278,22 @@ function toggleChapterPlayback() {
   state.chapterTimer = setInterval(() => {
     if (state.selectedChapter >= 119) { stopChapterPlayback(); return; }
     selectChapter(state.selectedChapter + 1);
-  }, 720);
+  }, Number($("chapter-speed").value));
 }
 function renderChapterEvents() {
   const list = $("chapter-event-list");
-  const rows = byChapter(state.events, state.selectedChapter);
+  const type = $("event-filter").value, personId = $("person-filter").value;
+  const rows = byChapter(state.events, state.selectedChapter).filter(event =>
+    (type === "all" || event.event_type_candidate === type) && (personId === "all" || event.candidate_person_ids.includes(personId)));
+  $("overview-clear-filters").hidden = type === "all" && personId === "all";
   $("chapter-event-count").textContent = `${number(rows.length)} 条候选`;
   list.replaceChildren();
   rows.slice(0, 80).forEach((event, index) => {
     const row = document.createElement("div");
     row.className = "list-row event-list-row";
     row.dataset.eventId = event.event_id;
+    row.classList.toggle("active", ui.selectedEvent === event.event_id);
+    row.setAttribute("aria-pressed", String(ui.selectedEvent === event.event_id));
     row.tabIndex = 0;
     row.setAttribute("role", "button");
     row.setAttribute("aria-label", `查看${event.trigger_surface || EVENT_LABELS[event.event_type_candidate] || event.event_type_candidate}原文证据`);
@@ -260,12 +302,22 @@ function renderChapterEvents() {
     row.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectEvent(event); } });
     list.append(row);
   });
+  if (!rows.length) list.innerHTML = `<div class="empty-state compact-empty">${type !== "all" || personId !== "all" ? "本章没有符合筛选的事件线索。可清除筛选，或切换章节。" : "本章暂无规则识别的事件线索。仍可点击地图地名，查看原文出处。"}</div>`;
 }
 function renderReaderChapter(ordinal, targetParagraph = null) {
   const chapter = state.chapters.find(row => row.source_ordinal === Number(ordinal));
   if (!chapter) return;
   state.selectedChapter = chapter.source_ordinal;
-  $("reader-chapter-id").textContent = `${chapter.chapter_id} · SOURCE FILE ${chapter.source_filename}`;
+  $("chapter-range").value = String(state.selectedChapter);
+  $("chapter-value").textContent = `第 ${state.selectedChapter} / ${state.chapters.length} 章`;
+  updateChapterPresentation();
+  $("reader-chapter-id").textContent = `原文序号 ${String(chapter.source_ordinal).padStart(3,"0")} / ${state.chapters.length} · 保留源章名`;
+  $("reader-source-file").textContent = chapter.source_filename;
+  $("reader-position").textContent = `${chapter.source_ordinal} / ${state.chapters.length}`;
+  $("reader-prev").disabled = chapter.source_ordinal <= 1;
+  $("reader-next").disabled = chapter.source_ordinal >= state.chapters.length;
+  $("reader-prev").title = state.chapters[chapter.source_ordinal - 2]?.original_title || "已到第一章";
+  $("reader-next").title = state.chapters[chapter.source_ordinal]?.original_title || "已到最后一章";
   $("reader-title").textContent = chapter.original_title;
   const article = $("reader-text");
   article.replaceChildren();
@@ -276,7 +328,10 @@ function renderReaderChapter(ordinal, targetParagraph = null) {
     appendHighlighted(p, text, state.selectedText);
     article.append(p);
   });
-  document.querySelectorAll(".chapter-item").forEach((node, i) => node.classList.toggle("active", i + 1 === chapter.source_ordinal));
+  document.querySelectorAll(".chapter-item").forEach(node => {
+    const selected = Number(node.dataset.chapterOrder) === chapter.source_ordinal;
+    node.classList.toggle("active", selected); node.setAttribute("aria-current", String(selected));
+  });
   if (targetParagraph) {
     const target = $(targetParagraph);
     if (target) { target.classList.add("target-paragraph"); target.scrollIntoView({ behavior: "smooth", block: "center" }); }
@@ -297,7 +352,8 @@ function appendHighlighted(parent, text, term) {
 }
 function searchText() {
   const term = $("text-search").value.trim();
-  if (!term) return;
+  if (!term) { clearTextSearch(); return; }
+  $("clear-text-search").disabled = false;
   state.selectedText = term;
   const hits = [];
   for (const chapter of state.chapters) {
@@ -307,13 +363,29 @@ function searchText() {
   const target = $("search-results");
   target.replaceChildren();
   const label = document.createElement("p"); label.className = "eyebrow"; label.textContent = `命中 ${hits.length} 个章节`; target.append(label);
-  hits.slice(0, 25).forEach(hit => {
+  hits.forEach(hit => {
     const row = document.createElement("div"); row.className = "search-hit";
     row.innerHTML = `<strong>${String(hit.chapter.source_ordinal).padStart(3,"0")} · ${escapeHTML(hit.chapter.original_title)}</strong><div>${escapeHTML(hit.excerpt)}</div>`;
-    row.addEventListener("click", () => { selectChapter(hit.chapter.source_ordinal); renderReaderChapter(hit.chapter.source_ordinal); const occurrence = hit.chapter.body.slice(0, hit.at).split(/\n[\t ]*\n+/).filter(Boolean).length + 1; const p = $(`${hit.chapter.chapter_id}_p_${String(occurrence).padStart(4,"0")}`); p?.scrollIntoView({behavior:"smooth",block:"center"}); });
+    bindRecordAction(row, () => {
+      selectChapter(hit.chapter.source_ordinal);
+      const p = $("reader-text").querySelector("mark")?.closest("p");
+      if (p) { p.classList.add("target-paragraph"); p.scrollIntoView({behavior:"smooth",block:"center"}); }
+    });
     target.append(row);
   });
-  if (!hits.length) toast("未找到该词的原文命中");
+  if (!hits.length) target.insertAdjacentHTML("beforeend", `<div class="empty-state compact-empty">原文中没有找到“${escapeHTML(term)}”。试试人物的其他称谓，或缩短关键词。</div>`);
+}
+function clearTextSearch() {
+  state.selectedText = ""; $("text-search").value = ""; $("search-results").replaceChildren();
+  $("clear-text-search").disabled = true; renderReaderChapter(state.selectedChapter);
+}
+function setReaderFont(value, persist = true) {
+  ui.readerFont = Math.max(16, Math.min(24, Number(value) || 18));
+  $("reader-text").style.setProperty("--reader-font", `${ui.readerFont}px`);
+  $("reader-font-value").textContent = String(ui.readerFont);
+  $("reader-font-smaller").disabled = ui.readerFont <= 16;
+  $("reader-font-larger").disabled = ui.readerFont >= 24;
+  if (persist) { try { localStorage.setItem("sanguo-reader-font", String(ui.readerFont)); } catch (_) { /* Preference is optional. */ } }
 }
 
 function popupNode(title, subtitle, excerpt, action) {
@@ -325,6 +397,7 @@ function popupNode(title, subtitle, excerpt, action) {
   return box;
 }
 function selectEvent(event) {
+  ui.selectedEvent = event.event_id;
   $("chapter-event-list").querySelectorAll("[data-event-id]").forEach(node => {
     const selected = node.dataset.eventId === event.event_id;
     node.classList.toggle("active", selected);
@@ -343,8 +416,11 @@ function selectPlace(geocode) {
   $("selection-kind").textContent = `${STATUS_LABELS[geocode.geocode_status] || geocode.geocode_status} · ${features.length} 处原文`;
   const hs=geocode.historical_screen_status||"NOT_RUN", hp=geocode.historical_screen_period_status||"UNKNOWN";
   const hx=geocode.historical_screen_longitude==null?"未得到唯一历史库坐标":`${Number(geocode.historical_screen_longitude).toFixed(5)}, ${Number(geocode.historical_screen_latitude).toFixed(5)} · MED ${geocode.historical_screen_med_km==null?"?":Number(geocode.historical_screen_med_km).toFixed(2)+" km"}`;
-  content.innerHTML = `<h3>${escapeHTML(geocode.historical_toponym)}</h3><div class="evidence-meta"><span>主路径 ${escapeHTML(geocode.match_status || "UNKNOWN")}</span><span>${number(geocode.project_source_occurrence_count)} 次表面命中</span><span>来源时期 ${escapeHTML(geocode.matched_period||"UNKNOWN")}</span></div><p>主路径候选：${escapeHTML((geocode.matched_gazetteer || []).join("、") || "无")}</p><p>主路径坐标：${geocode.longitude == null ? "未确定" : `${Number(geocode.longitude).toFixed(5)}, ${Number(geocode.latitude).toFixed(5)}`}</p><div class="evidence-note">历史地名志独立筛查：${escapeHTML(hs)} · ${escapeHTML(hp)}；${escapeHTML(hx)}。坐标只代表 Gazetteer 候选，未核对原文含义。</div><div class="compact-list">${features.slice(0,6).map(row=>`<div class="list-row" data-paragraph="${escapeHTML(row.paragraph_id)}" data-chapter="${escapeHTML(row.chapter_id)}"><div class="list-row-meta">${escapeHTML(row.chapter_id)} · ${escapeHTML(row.paragraph_id)}</div><div class="list-row-title">${escapeHTML(row.source_file)}</div></div>`).join("")}</div>`;
-  content.querySelectorAll("[data-paragraph]").forEach(node => node.addEventListener("click", () => jumpToParagraph(node.dataset.chapter, node.dataset.paragraph)));
+  const period = { historic: "历史地名志", modern: "现代地名志参照" }[geocode.matched_period] || "来源时期未确定";
+  const periods = { OVERLAPS_PROJECT_ANALYSIS_WINDOW: "与研究年代范围重叠", HISTORIC_PERIOD_UNKNOWN: "地名志年代未知", OUTSIDE_PROJECT_ANALYSIS_WINDOW: "不在研究年代范围内", NO_HISTORIC_GAZETTEER_MATCH: "历史库未匹配", MULTIPLE_HISTORIC_CANDIDATES: "历史库存在多候选" };
+  const paragraphs = [...new Map(features.map(row => [row.paragraph_id, row])).values()];
+  content.innerHTML = `<h3>${escapeHTML(geocode.historical_toponym)}</h3><div class="evidence-meta"><span>${escapeHTML(period)}</span><span>${features.length} 处提及 · ${paragraphs.length} 段原文</span></div><dl class="place-detail-grid"><div><dt>匹配坐标 · 经度 / 纬度</dt><dd>${geocode.longitude == null ? "尚无唯一坐标" : `${Number(geocode.longitude).toFixed(5)}, ${Number(geocode.latitude).toFixed(5)}`}</dd></div><div><dt>最大误差距离（MED）</dt><dd>${geocode.maximum_error_distance_km == null ? "未确定" : `${Number(geocode.maximum_error_distance_km).toFixed(2)} km`}</dd></div></dl><div class="evidence-note">历史库独立筛查：${escapeHTML(STATUS_LABELS[hs] || "未取得唯一结果")}；${escapeHTML(periods[hp] || "年代状态待核验")}。${escapeHTML(hx)}。地名含义仍待核验。</div><details class="evidence-technical"><summary>地名志候选与原始审核状态</summary><p>${escapeHTML((geocode.matched_gazetteer || []).join("、") || "无候选编号")}</p><code>${escapeHTML(geocode.match_status || "UNKNOWN")} · ${escapeHTML(hs)} · ${escapeHTML(hp)}</code></details><h4 class="evidence-section-label">原文出处 <span>展示 ${Math.min(6, paragraphs.length)} / ${paragraphs.length} 段</span></h4><div class="source-preview-list">${paragraphs.slice(0,6).map(row=>`<div class="list-row" data-paragraph="${escapeHTML(row.paragraph_id)}" data-chapter="${escapeHTML(row.chapter_id)}"><div class="list-row-meta">第 ${row.chapter_order} 章 · ${escapeHTML(row.paragraph_id)}</div><div class="list-row-excerpt">${escapeHTML(paragraphText(row.paragraph_id).slice(0,160) || row.source_file)}</div></div>`).join("")}</div>`;
+  content.querySelectorAll("[data-paragraph]").forEach(node => bindRecordAction(node, () => jumpToParagraph(node.dataset.chapter, node.dataset.paragraph)));
 }
 function jumpToParagraph(chapterId, paragraphId) {
   const chapter = findChapter(chapterId);
@@ -377,7 +453,7 @@ function drawOverviewMap() {
     visibleEventCount += 1;
     const war = props.event_type_candidate === "war";
     const marker = L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], { radius: war ? 6 : 4, color: war ? "#8d473e" : "#397f79", weight: 1, fillColor: war ? "#c76556" : "#66aaa0", fillOpacity: .78 });
-    marker.bindPopup(popupNode(`${props.event_type_candidate} · ${props.historical_toponym}`, `${props.chapter_id} / ${props.paragraph_id} · ${props.event_id}`, props.source_excerpt, () => jumpToParagraph(props.chapter_id, props.paragraph_id)));
+    marker.bindPopup(popupNode(`${EVENT_LABELS[props.event_type_candidate] || props.event_type_candidate} · ${props.historical_toponym}`, `第 ${props.chapter_order} 章 · ${props.paragraph_id}`, props.source_excerpt, () => jumpToParagraph(props.chapter_id, props.paragraph_id)));
     marker.on("click", () => {
       const event = state.events.find(row => row.event_id === props.event_id);
       if (event) selectEvent(event);
@@ -399,7 +475,7 @@ function drawOverviewMap() {
   const showLabels = $("place-label-toggle")?.checked !== false;
   const viewBounds = map.getBounds();
   let labelCount = 0;
-  const labelBoxes = [];
+  const labelBoxes = mapLabelObstacles(map);
   placeGroups.forEach(rows => {
     const result = rows[0];
     const names = rows.map(row=>row.historical_toponym);
@@ -410,19 +486,26 @@ function drawOverviewMap() {
     const inView = viewBounds.contains([result.latitude,result.longitude]);
     const placement = showLabels && inView && labelCount < labelLimit ? findLabelPlacement(map, [result.latitude,result.longitude], ancientLabel, labelBoxes) : null;
     if (placement) {
-      marker.bindTooltip(ancientLabel,{permanent:true,...placement,className:"historical-place-label",opacity:.98});
+      marker.bindTooltip(escapeHTML(ancientLabel),{permanent:true,...placement,className:"historical-place-label",opacity:.98});
       labelCount += 1;
     }
     marker.addTo(group);
   });
   $("map-dynamic-status").textContent = `第 ${state.selectedChapter} 章及以前 · ${number(visibleEventCount)} 条事件候选 · ${number(placeGroups.length)} 处有坐标的原文地名${showLabels ? ` · 当前视野标注 ${number(labelCount)} 个古地名` : " · 地名标签已关闭"}`;
 }
+function mapLabelObstacles(map) {
+  const rect = map.getContainer().getBoundingClientRect();
+  const controls = [...map.getContainer().querySelectorAll(".leaflet-control")];
+  const stage = map.getContainer().closest(".map-stage");
+  if (stage) controls.push(...stage.querySelectorAll(".map-inscription, .map-compass"));
+  return controls.map(node => node.getBoundingClientRect()).filter(box => box.width > 0 && box.height > 0).map(box => ({ left: box.left-rect.left-5, right: box.right-rect.left+5, top: box.top-rect.top-5, bottom: box.bottom-rect.top+5 }));
+}
 
 // Reserve screen rectangles for labels; candidate coordinates and identities stay untouched.
 function findLabelPlacement(map, latlng, text, occupied) {
   const point = map.latLngToContainerPoint(latlng), size = map.getSize();
-  const width = [...text].reduce((sum, char) => sum + (/[\u2e80-\u9fff]/.test(char) ? 11 : 6), 16);
-  const height = 25, gap = 10;
+  const width = [...text].reduce((sum, char) => sum + (/[\u2e80-\u9fff]/.test(char) ? 12 : 6.5), 16);
+  const height = 27, gap = 10;
   const candidates = [
     {direction:"right", offset:[7,0], x:point.x+gap, y:point.y-height/2},
     {direction:"left", offset:[-7,0], x:point.x-gap-width, y:point.y-height/2},
@@ -449,8 +532,10 @@ function fillPeopleSelectors() {
 function drawTracks() {
   const group = state.layers.tracks; if (!group) return;
   group.clearLayers();
+  ui.trackLabels = []; ui.trackMarkers = new Map(); ui.trackIndex = -1;
   const personId = $("track-person")?.value;
   const person = state.people.find(row => row.character_id === personId);
+  $("track-monogram").textContent = person?.canonical_name.slice(0,1) || "人";
   const map = state.maps.tracks;
   const container = map?.getContainer();
   const mentions = state.peopleMentions.filter(row => row.character_ids.includes(personId));
@@ -506,9 +591,7 @@ function drawTracks() {
       radius: names.length > 1 ? 7 : 6, color: "#fffaf0", weight: 2,
       fillColor: "#b99963", fillOpacity: .95, className: "person-track-node"
     }).addTo(group);
-    marker.bindTooltip(names.slice(0, 3).join(" · ") + (names.length > 3 ? ` +${names.length - 3}` : ""), {
-      permanent: true, direction: "right", offset: [8, 0], className: "historical-place-label", opacity: .98
-    });
+    ui.trackLabels.push({ marker, text: names.slice(0, 3).join(" · ") + (names.length > 3 ? ` +${names.length - 3}` : "") });
     const evidence = rows[0];
     marker.bindPopup(popupNode(
       names.join("、"),
@@ -517,6 +600,10 @@ function drawTracks() {
       () => jumpToParagraph(evidence.row.chapter_id, evidence.row.paragraph_id)
     ));
     markerByCoordinate.set(key, marker);
+    marker.on("click", () => {
+      ui.trackIndex = nodes.findIndex(node => `${node.longitude.toFixed(5)},${node.latitude.toFixed(5)}` === key);
+      updateTrackRecordControls();
+    });
   }
   $("track-map-title").textContent = `${person?.canonical_name || "人物"} · 叙事地点顺序`;
   $("track-status").textContent = `${number(nodes.length)} 条同段候选 · ${number(byCoordinate.size)} 个地图点${lineCoordinates.length >= 2 ? ` · ${number(lineCoordinates.length)} 个顺序轨迹节点` : nodes.length === 1 ? " · 单点证据" : " · 无法连线"}`;
@@ -529,29 +616,57 @@ function drawTracks() {
   }
   $("track-records").innerHTML = nodes.map((node,index) => {
     const key = `${node.longitude.toFixed(5)},${node.latitude.toFixed(5)}`;
-    return `<div class="list-row" role="button" tabindex="0" data-track-index="${index}" data-track-coordinate="${key}" data-chapter="${escapeHTML(node.row.chapter_id)}" data-paragraph="${escapeHTML(node.row.paragraph_id)}"><div class="list-row-title">${escapeHTML(node.person)} · ${escapeHTML(node.row.historical_toponym)}</div><div class="list-row-meta"><span>${escapeHTML(node.row.chapter_id)}</span><span>${escapeHTML(node.row.paragraph_id)}</span><span>MED ${node.med == null ? "?" : Number(node.med).toFixed(1)+"km"}</span></div><div class="list-row-excerpt">点击在地图上定位；点位弹窗可打开原文证据</div></div>`;
+    return `<div class="list-row" role="button" tabindex="0" aria-pressed="false" data-track-index="${index}" data-track-coordinate="${key}" data-chapter="${escapeHTML(node.row.chapter_id)}" data-paragraph="${escapeHTML(node.row.paragraph_id)}"><div class="list-row-title">${escapeHTML(node.row.historical_toponym)}<span class="record-chapter">第 ${node.row.chapter_order} 章</span></div><div class="list-row-meta" title="${escapeHTML(node.row.paragraph_id)}">${escapeHTML(node.person)} · MED ${node.med == null ? "未知" : Number(node.med).toFixed(1)+" km"}</div><div class="list-row-excerpt">${escapeHTML(paragraphText(node.row.paragraph_id).slice(0,160))}</div></div>`;
   }).join("") || `<div class="empty-state">${person ? `${escapeHTML(person.canonical_name)} 当前没有符合历史地名志筛查条件的同段地点坐标。` : "请先选择人物。"} 仍可到原著阅读页检索人物名；这里不会用现代地点坐标冒充历史位置。</div>`;
   $("track-records").querySelectorAll("[data-track-index]").forEach(node => {
     const focusNode = () => {
-      const marker = markerByCoordinate.get(node.dataset.trackCoordinate);
-      if (!marker || !map) return;
-      $("track-records").querySelectorAll(".list-row").forEach(row => row.classList.toggle("active", row === node));
-      const zoom = Math.max(map.getZoom(), 5.6);
-      map.setView(marker.getLatLng(), Math.min(zoom, 8), { animate: false });
-      marker.openPopup();
+      focusTrackRecord(Number(node.dataset.trackIndex));
     };
     node.addEventListener("click", focusNode);
     node.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); focusNode(); } });
   });
+  ui.trackMarkers = markerByCoordinate;
+  updateTrackRecordControls();
+  ui.trackBounds = nodes.length ? L.latLngBounds(nodes.map(node => [node.latitude, node.longitude])) : null;
   if (map && nodes.length) {
     const bounds = L.latLngBounds(nodes.map(node => [node.latitude, node.longitude]));
     setTimeout(() => {
       map.invalidateSize();
       if (bounds.isValid()) map.fitBounds(bounds, { padding: [36, 36], maxZoom: 5.6, animate: false });
+      refreshTrackLabels();
     }, 80);
   } else if (map) {
     map.setView([35, 105], 3.7, { animate: false });
     setTimeout(() => map.invalidateSize(), 40);
+  }
+}
+function updateTrackRecordControls() {
+  const records = [...$("track-records").querySelectorAll("[data-track-index]")];
+  records.forEach((row, index) => { row.classList.toggle("active", index === ui.trackIndex); row.setAttribute("aria-pressed", String(index === ui.trackIndex)); });
+  $("track-prev-record").disabled = ui.trackIndex <= 0;
+  $("track-next-record").disabled = !records.length || ui.trackIndex >= records.length-1;
+  $("track-record-position").textContent = records.length ? `${ui.trackIndex < 0 ? "—" : ui.trackIndex+1} / ${records.length} 条地点证据` : "暂无可定位证据";
+}
+function focusTrackRecord(index) {
+  const records = [...$("track-records").querySelectorAll("[data-track-index]")];
+  const record = records[index], map = state.maps.tracks;
+  if (!record || !map) return;
+  const marker = ui.trackMarkers.get(record.dataset.trackCoordinate);
+  if (!marker) return;
+  ui.trackIndex = index; updateTrackRecordControls();
+  map.setView(marker.getLatLng(), Math.min(Math.max(map.getZoom(), 5.6),8), { animate:false });
+  marker.openPopup();
+  record.scrollIntoView({ block:"nearest", inline:"nearest" });
+}
+function refreshTrackLabels() {
+  const map = state.maps.tracks;
+  if (!map || !map.getContainer().clientWidth) return;
+  const boxes = mapLabelObstacles(map);
+  for (const {marker,text} of ui.trackLabels) {
+    marker.unbindTooltip();
+    if (!map.getBounds().contains(marker.getLatLng())) continue;
+    const placement = findLabelPlacement(map, marker.getLatLng(), text, boxes);
+    if (placement) marker.bindTooltip(escapeHTML(text), {permanent:true,...placement,className:"historical-place-label",opacity:.98});
   }
 }
 
@@ -561,19 +676,22 @@ function renderAnalysisMap() {
   group.clearLayers();
   const values = state.kdeGeo.features.map(feature => feature.properties.density || 0);
   const max = Math.max(...values, 1);
-  if (state.kdeGeo.features.length) {
+  if ($("analysis-density").checked && state.kdeGeo.features.length) {
     L.geoJSON(state.kdeGeo, { style: feature => {
       const ratio = Math.max(0, Math.min(1, (feature.properties.density || 0) / max));
-      const color = ratio > .65 ? "#bd5d50" : ratio > .3 ? "#e4ad58" : "#68a99a";
-      return { color, weight: .3, fillColor: color, fillOpacity: .18 + ratio * .58 };
+      const color = ratio > .65 ? "#b86b54" : ratio > .3 ? "#cfb279" : "#8eac8d";
+      return { color, weight: .12, opacity: .2, fillColor: color, fillOpacity: .14 + ratio * .56 };
     }}).addTo(group);
   }
-  L.geoJSON(state.bufferGeo, { style: feature => ({ color: "#815b34", weight: 1.3, fillColor: "#d9ad70", fillOpacity: .10, dashArray: "4 4" }) }).addTo(group);
-  state.eventGeo.features.filter(row => row.properties.event_type_candidate === "war").forEach(feature => {
-    L.circleMarker([feature.geometry.coordinates[1],feature.geometry.coordinates[0]],{radius:4,color:"#873f3d",weight:1,fillColor:"#d36d59",fillOpacity:.85}).addTo(group);
+  if ($("analysis-buffers").checked) L.geoJSON(state.bufferGeo, { style: feature => ({ color: "#a38a5d", weight: 1.1, fillColor: "#d9bd81", fillOpacity: .10, dashArray: "4 4" }) }).addTo(group);
+  if ($("analysis-events").checked) state.eventGeo.features.filter(row => row.properties.event_type_candidate === "war").forEach(feature => {
+    const props = feature.properties;
+    L.circleMarker([feature.geometry.coordinates[1],feature.geometry.coordinates[0]],{radius:4,color:"#fffaf0",weight:1,fillColor:"#b96f55",fillOpacity:.9})
+      .bindPopup(popupNode(`战争候选 · ${props.historical_toponym}`, `第 ${props.chapter_order} 章 · ${props.paragraph_id}`, props.source_excerpt, () => jumpToParagraph(props.chapter_id, props.paragraph_id))).addTo(group);
   });
-  $("kde-status").textContent = state.analysis.kde.status;
-  $("kde-caption").textContent = `核密度输入 ${number(state.analysis.war_candidate_point_features)} 个战争段落—地名共现点；Gaussian bandwidth ${state.analysis.kde.bandwidth_km} km，网格 ${state.analysis.kde.cell_size_km} km，输出 ${number(state.analysis.kde.grid_cell_count || 0)} 格。${state.analysis.kde.area_note || ""}`;
+  $("kde-status").textContent = state.kdeGeo.features.length ? "已计算 · 历史含义待核验" : "暂无可显示的核密度";
+  $("kde-status").title = state.analysis.kde.status;
+  $("kde-caption").textContent = `输入 ${number(state.analysis.war_candidate_point_features)} 个战争段落—地名共现点 · 高斯带宽 ${state.analysis.kde.bandwidth_km} km · 网格 ${state.analysis.kde.cell_size_km} km · 共 ${number(state.analysis.kde.grid_cell_count || 0)} 格。等积网格用于比较候选密度，不能解释为真实战场范围或行军路线。`;
 }
 function renderBufferCards() {
   const groups = new Map();
@@ -606,18 +724,30 @@ function renderPlaces(filter = state.placeFilter) {
   const values = state.places.map(place => ({...place, geo: geocodeByName(place.historical_toponym)})).filter(place => {
     const status = place.geo?.geocode_status || "NOT_RUN_LIMIT";
     if (filter !== "all" && status !== filter) return false;
-    if (query && !`${place.historical_toponym} ${status} ${(place.geo?.matched_gazetteer || []).join(" ")}`.toLowerCase().includes(query)) return false;
+    if (query && !`${place.historical_toponym} ${status} ${STATUS_LABELS[status] || ""} ${(place.geo?.matched_gazetteer || []).join(" ")}`.toLowerCase().includes(query)) return false;
     return true;
   });
-  const head = `<div class="place-row header"><span>原文地名</span><span>出现段落</span><span>状态</span><span>坐标 / MED</span><span>Gazetteer 候选</span></div>`;
-  const rows = values.slice(0,500).map(place => {
+  const pages = Math.max(1, Math.ceil(values.length / ui.pageSize));
+  ui.placePage = Math.max(1, Math.min(ui.placePage, pages));
+  const start = (ui.placePage-1)*ui.pageSize;
+  $("place-result-summary").textContent = `共 ${number(values.length)} 个地名${query ? ` · 关键词“${query}”` : " · 保留地名清单顺序"}`;
+  $("place-page-summary").textContent = values.length ? `${start+1}–${Math.min(start+ui.pageSize,values.length)} / ${number(values.length)} 条 · 第 ${ui.placePage} / ${pages} 页` : "暂无匹配记录";
+  $("place-page-prev").disabled = ui.placePage <= 1;
+  $("place-page-next").disabled = ui.placePage >= pages;
+  document.querySelectorAll("[data-place-filter]").forEach(button => {
+    button.classList.toggle("active",button.dataset.placeFilter === filter);
+    button.setAttribute("aria-pressed",String(button.dataset.placeFilter === filter));
+  });
+  const head = `<div class="place-row header"><span>原文地名</span><span>出现段落</span><span>匹配状态</span><span>坐标 / 最大误差距离</span><span>地名志候选编号</span></div>`;
+  const rows = values.slice(start,start+ui.pageSize).map(place => {
     const geo = place.geo || {};
     const status = geo.geocode_status || "NOT_RUN_LIMIT";
     const cls = status === "OK" ? "ok" : status === "MULTIPLE_MATCHES" ? "multi" : status === "NO_MATCH" ? "fail" : "";
-    const coords = geo.longitude == null ? "—" : `${Number(geo.longitude).toFixed(3)}, ${Number(geo.latitude).toFixed(3)} · MED ${geo.maximum_error_distance_km == null ? "?" : Number(geo.maximum_error_distance_km).toFixed(1)+"km"}`;
-    return `<div class="place-row" role="button" tabindex="0" data-place="${escapeHTML(place.historical_toponym)}"><span class="place-name">${escapeHTML(place.historical_toponym)}</span><span>${number(place.paragraph_count || 0)} 段</span><span class="status-tag ${cls}" title="${escapeHTML(status)}">${escapeHTML(STATUS_LABELS[status] || status)}</span><span>${escapeHTML(coords)}</span><span>${escapeHTML((geo.matched_gazetteer || []).slice(0,4).join(", ") || "—")}</span></div>`;
+    const coords = geo.longitude == null ? `<span class="cell-placeholder">尚无唯一坐标</span>` : `<span class="coordinate-value">${Number(geo.longitude).toFixed(3)}, ${Number(geo.latitude).toFixed(3)}</span><small>MED ${geo.maximum_error_distance_km == null ? "未知" : Number(geo.maximum_error_distance_km).toFixed(1)+" km"} · ${geo.matched_period === "modern" ? "现代参照" : "历史地名志"}</small>`;
+    return `<div class="place-row" role="button" tabindex="0" data-place="${escapeHTML(place.historical_toponym)}"><span class="place-name">${escapeHTML(place.historical_toponym)}</span><span>${number(place.paragraph_count || 0)} 段</span><span class="status-tag ${cls}" title="${escapeHTML(status)}">${escapeHTML(STATUS_LABELS[status] || status)}</span><span class="coordinate-cell">${coords}</span><span class="candidate-cell" title="${escapeHTML((geo.matched_gazetteer || []).join(", "))}">${escapeHTML((geo.matched_gazetteer || []).slice(0,3).join(", ") || "—")}</span></div>`;
   }).join("");
-  $("place-table").innerHTML = head + rows + `<p class="caption">显示 ${number(Math.min(values.length,500))} / ${values.length} 条；搜索与筛选基于完整清单。</p>`;
+  $("place-table").innerHTML = values.length ? head + rows : `<div class="empty-state table-empty">${icon("search")}<h3>没有找到符合条件的地名</h3><p>可以尝试较短的关键词，或重置匹配状态。</p><button id="place-clear" class="secondary-button">清除搜索与筛选</button></div>`;
+  $("place-clear")?.addEventListener("click",()=> { $("place-search").value = ""; ui.placePage=1; renderPlaces("all"); });
   $("place-table").querySelectorAll("[data-place]").forEach(node => {
     const select = () => {
     const row = geocodeByName(node.dataset.place);
@@ -646,9 +776,9 @@ function drawNetwork() {
   const personSet = new Set(people.map(row=>row[0]));
   const placeSet = new Set(places.map(row=>row[0]));
   const eventSet = new Set(eventRows.map(row=>row.event.paragraph_id));
-  people.forEach(([id,count],i)=>nodes.push({id:`p:${id}`,type:"person",label:state.people.find(row=>row.character_id===id)?.canonical_name||id,count,x:145,y:42+i*31,raw:id}));
-  eventRows.forEach(({event},i)=>nodes.push({id:`e:${event.event_id}`,type:"event",label:`${event.chapter_id} · ${event.trigger_surface||event.event_type_candidate}`,count:1,x:390,y:28+i*15.5,raw:event}));
-  places.forEach(([name,count],i)=>nodes.push({id:`l:${name}`,type:"place",label:name,count,x:635,y:42+i*31,raw:name}));
+  people.forEach(([id,count],i)=>nodes.push({id:`p:${id}`,type:"person",label:state.people.find(row=>row.character_id===id)?.canonical_name||id,count,x:115,y:49+i*35,raw:id}));
+  eventRows.forEach(({event},i)=>nodes.push({id:`e:${event.event_id}`,type:"event",label:`第 ${event.chapter_order} 章 · ${event.trigger_surface||EVENT_LABELS[event.event_type_candidate]||event.event_type_candidate}`,count:1,x:365,y:38+i*18,raw:event}));
+  places.forEach(([name,count],i)=>nodes.push({id:`l:${name}`,type:"place",label:name,count,x:635,y:49+i*35,raw:name}));
   const edges = [];
   for (const event of state.events) {
     if (!eventSet.has(event.paragraph_id)) continue;
@@ -659,25 +789,43 @@ function drawNetwork() {
     for (const mention of placesInPara) if (placeSet.has(mention.historical_toponym)) edges.push([enode,`l:${mention.historical_toponym}`]);
   }
   const nodeMap = new Map(nodes.map(node=>[node.id,node]));
-  const edgeSvg = edges.map(([a,b])=>{const x=nodeMap.get(a),y=nodeMap.get(b);return x&&y?`<line class="graph-edge" x1="${x.x}" y1="${x.y}" x2="${y.x}" y2="${y.y}"/>`:""}).join("");
+  const edgeSvg = edges.map(([a,b])=>{const x=nodeMap.get(a),y=nodeMap.get(b);return x&&y?`<line class="graph-edge" data-source="${escapeHTML(a)}" data-target="${escapeHTML(b)}" x1="${x.x}" y1="${x.y}" x2="${y.x}" y2="${y.y}"/>`:""}).join("");
   const colors={person:"#b18b55",event:"#6a9274",place:"#8199a0"};
-  const nodeSvg = nodes.map(node=>`<g class="graph-node" tabindex="0" role="button" data-node="${escapeHTML(node.id)}"><circle cx="${node.x}" cy="${node.y}" r="${Math.max(4,Math.min(11,4+Math.sqrt(node.count||1)))}" fill="${colors[node.type]}"/><text x="${node.x+10}" y="${node.y+3}" class="${node.type}">${escapeHTML(node.label.slice(0,18))}</text></g>`).join("");
-  host.innerHTML = `<svg viewBox="0 0 780 620" role="img" aria-label="人物事件地点文本共现图"><text x="90" y="20" fill="#879aa3" font-size="9">人物</text><text x="345" y="20" fill="#879aa3" font-size="9">事件段落候选</text><text x="595" y="20" fill="#879aa3" font-size="9">原文地名</text>${edgeSvg}${nodeSvg}</svg>`;
-  host.querySelectorAll("[data-node]").forEach(node=>node.addEventListener("click",()=>showNetworkDetail(node.dataset.node)));
+  const nodeSvg = nodes.map(node=>`<g class="graph-node" tabindex="0" role="button" aria-label="${escapeHTML(node.label)}，查看原文关联" aria-pressed="false" data-node="${escapeHTML(node.id)}"><title>${escapeHTML(node.label)}</title><circle cx="${node.x}" cy="${node.y}" r="${Math.max(4,Math.min(10,4+Math.sqrt(node.count||1)))}" fill="${colors[node.type]}"/><text x="${node.x+14}" y="${node.y+4}" class="${node.type}">${escapeHTML(node.label.slice(0,18))}</text></g>`).join("");
+  host.innerHTML = `<svg viewBox="0 0 780 700" role="group" aria-label="人物事件地点文本共现图"><text x="95" y="19" fill="#75806b" font-size="11">人物</text><text x="345" y="19" fill="#75806b" font-size="11">事件段落候选</text><text x="615" y="19" fill="#75806b" font-size="11">原文地名</text>${edgeSvg}${nodeSvg}</svg>`;
+  document.querySelector(".graph-guide").textContent = `高频样本：${people.length} 位人物 · ${eventRows.length} 段事件 · ${places.length} 个地名。选择节点查看相邻关系，非完整知识图谱。`;
+  host.querySelectorAll("[data-node]").forEach(node=>bindRecordAction(node,()=>showNetworkDetail(node.dataset.node)));
+  highlightGraph(ui.graphSelection);
+}
+function highlightGraph(id) {
+  const host = $("network-graph"), connected = new Set(id ? [id] : []);
+  host.classList.toggle("has-selection", Boolean(id));
+  host.querySelectorAll(".graph-edge").forEach(edge => {
+    const selected = Boolean(id) && (edge.dataset.source === id || edge.dataset.target === id);
+    edge.classList.toggle("related", selected);
+    if (selected) { connected.add(edge.dataset.source); connected.add(edge.dataset.target); }
+  });
+  host.querySelectorAll(".graph-node").forEach(node => {
+    node.classList.toggle("related", connected.has(node.dataset.node));
+    node.classList.toggle("selected", node.dataset.node === id);
+    node.setAttribute("aria-pressed", String(node.dataset.node === id));
+  });
+  $("network-clear").hidden = !id;
 }
 function showNetworkDetail(id) {
+  ui.graphSelection = id; highlightGraph(id);
   const [type, key] = id.split(":",2);
   let title=key, mentions=[];
   if (type === "p") {
     const character=state.people.find(row=>row.character_id===key); title=character?.canonical_name||key;
-    mentions=state.peopleMentions.filter(row=>row.character_ids.includes(key)).slice(0,20).map(row=>({chapter_id:row.chapter_id,paragraph_id:row.paragraph_id,text:row.surface_form}));
+    mentions=[...new Map(state.peopleMentions.filter(row=>row.character_ids.includes(key)).map(row=>[row.paragraph_id,row])).values()].slice(0,20).map(row=>({chapter_id:row.chapter_id,paragraph_id:row.paragraph_id,text:paragraphText(row.paragraph_id)||row.surface_form}));
   } else if (type === "l") {
-    title=key; mentions=state.placeMentions.filter(row=>row.historical_toponym===key).slice(0,20).map(row=>({chapter_id:row.chapter_id,paragraph_id:row.paragraph_id,text:row.historical_toponym}));
+    title=key; mentions=[...new Map(state.placeMentions.filter(row=>row.historical_toponym===key).map(row=>[row.paragraph_id,row])).values()].slice(0,20).map(row=>({chapter_id:row.chapter_id,paragraph_id:row.paragraph_id,text:paragraphText(row.paragraph_id)||row.historical_toponym}));
   } else {
-    const event=state.events.find(row=>row.event_id===key); if(event){title=event.event_id;mentions=[{chapter_id:event.chapter_id,paragraph_id:event.paragraph_id,text:event.source_excerpt}];}
+    const event=state.events.find(row=>row.event_id===key); if(event){title=`${EVENT_LABELS[event.event_type_candidate] || "事件"} · ${event.trigger_surface}`;mentions=[{chapter_id:event.chapter_id,paragraph_id:event.paragraph_id,text:event.source_excerpt}];}
   }
-  const host=$("network-detail"); host.className="compact-list"; host.innerHTML=`<h3>${escapeHTML(title)}</h3><p class="evidence-note">边只表示段落共现</p>${mentions.map(row=>`<div class="list-row" data-chapter="${escapeHTML(row.chapter_id)}" data-paragraph="${escapeHTML(row.paragraph_id)}"><div class="list-row-meta">${escapeHTML(row.chapter_id)} · ${escapeHTML(row.paragraph_id)}</div><div class="list-row-excerpt">${escapeHTML(row.text)}</div></div>`).join("")}`;
-  host.querySelectorAll("[data-paragraph]").forEach(node=>node.addEventListener("click",()=>jumpToParagraph(node.dataset.chapter,node.dataset.paragraph)));
+  const host=$("network-detail"); host.className="compact-list"; host.innerHTML=`<h3>${escapeHTML(title)}</h3><p class="evidence-note">高亮连线仅表示事件段落共现。下方展示最多 20 段原文出处，点击可阅读。</p>${mentions.map(row=>`<div class="list-row" data-chapter="${escapeHTML(row.chapter_id)}" data-paragraph="${escapeHTML(row.paragraph_id)}"><div class="list-row-meta">第 ${findChapter(row.chapter_id)?.source_ordinal || "?"} 章 · ${escapeHTML(row.paragraph_id)}</div><div class="list-row-excerpt">${escapeHTML(row.text.slice(0,180))}</div></div>`).join("")}`;
+  host.querySelectorAll("[data-paragraph]").forEach(node=>bindRecordAction(node,()=>jumpToParagraph(node.dataset.chapter,node.dataset.paragraph)));
 }
 
 function renderFindings() {
@@ -687,7 +835,7 @@ function renderFindings() {
     ["候选战争段落",number(e.event_candidates_by_type?.war||0),"触发词规则，不是人工事件集"],
     ["主路径唯一匹配",number(resolved),`${number(g.coordinate_source_period_counts?.historic||0)} 历史库 / ${number(g.coordinate_source_period_counts?.modern||0)} 现代`],
     ["多候选保留",number(multi),"未强制选址"],
-    ["KDE 输入点",number(analysis.war_candidate_point_features),analysis.kde.status]
+    ["核密度输入点",number(analysis.war_candidate_point_features),"战争段落与地名同段共现"]
   ];
   $("findings-summary").innerHTML=cards.map(row=>`<div class="finding-card"><strong>${row[1]}</strong><span>${row[0]} · ${row[2]}</span></div>`).join("");
   $("supported-questions").innerHTML=[
@@ -704,12 +852,16 @@ function renderFindings() {
   ].map(text=>`<li>${escapeHTML(text)}</li>`).join("");
   const source=$("source-snapshot");
   const entries=[
-    ["His-Geo reproduction",g.hisgeo_commit], ["Official source commit",g.hisgeo_official_commit],
-    ["CHGIS TGAZ SHA-256",g.historic_tgaz_source_sha256], ["CRS provenance",g.historic_crs_statement],
-    ["Geocoder mode",g.geocoder_mode], ["Original corpus",state.build.corpus.source_root],
-    ["Paid inference",String(g.paid_api_calls===0?"0 calls":"see build manifest")], ["Source file count",String(state.build.corpus.chapter_count)]
+    ["His-Geo 独立实现版本",g.hisgeo_commit], ["作者官方代码版本",g.hisgeo_official_commit],
+    ["CHGIS 地名志 SHA-256",g.historic_tgaz_source_sha256], ["坐标系来源声明",g.historic_crs_statement],
+    ["地理编码模式",g.geocoder_mode], ["原始语料来源",state.build.corpus.source_root],
+    ["付费推理调用",String(g.paid_api_calls===0?"0 次 · 全程离线":"详见构建清单")], ["原文章节数",`${state.build.corpus.chapter_count} 章`]
   ];
-  source.innerHTML=entries.map(([key,value])=>`<div class="source-value"><span>${escapeHTML(key)}</span><code>${escapeHTML(value)}</code></div>`).join("");
+  source.innerHTML=entries.map(([key,value])=>`<div class="source-value"><span>${escapeHTML(key)}<button class="copy-value" data-copy-value="${escapeHTML(value)}" title="复制${escapeHTML(key)}" aria-label="复制${escapeHTML(key)}">${icon("copy")}</button></span><code>${escapeHTML(value)}</code></div>`).join("");
+  source.querySelectorAll("[data-copy-value]").forEach(button=>button.addEventListener("click",async()=>{
+    try { await navigator.clipboard.writeText(button.dataset.copyValue); toast("已复制来源信息"); }
+    catch (_) { toast("当前浏览器无法写入剪贴板，可直接选中该值复制"); }
+  }));
 }
 
 function selectMapResult(feature) {
@@ -718,24 +870,55 @@ function selectMapResult(feature) {
   if(event) selectEvent(event);
 }
 function bindControls() {
+  try { setReaderFont(localStorage.getItem("sanguo-reader-font"), false); } catch (_) { setReaderFont(18, false); }
+  $("reader-font-smaller").addEventListener("click",()=>setReaderFont(ui.readerFont-1));
+  $("reader-font-larger").addEventListener("click",()=>setReaderFont(ui.readerFont+1));
+  $("chapter-search").addEventListener("input",renderChapterList);
+  $("clear-text-search").addEventListener("click",clearTextSearch);
+  $("text-search").addEventListener("input",()=> { if (!$("text-search").value) clearTextSearch(); });
+  for (const [id,delta] of [["reader-prev",-1],["reader-next",1]]) $(id).addEventListener("click",()=> {
+    selectChapter(state.selectedChapter+delta); document.querySelector(".reader-toolbar").scrollIntoView({block:"start"});
+  });
+  $("track-reset").addEventListener("click",()=> {
+    if (ui.trackBounds?.isValid()) state.maps.tracks.fitBounds(ui.trackBounds,{padding:[36,36],maxZoom:5.6,animate:false});
+    refreshTrackLabels();
+  });
+  $("track-prev-record").addEventListener("click",()=>focusTrackRecord(ui.trackIndex-1));
+  $("track-next-record").addEventListener("click",()=>focusTrackRecord(ui.trackIndex+1));
+  $("network-clear").addEventListener("click",()=> {
+    ui.graphSelection=null; highlightGraph(null);
+    $("network-detail").className="empty-state";
+    $("network-detail").innerHTML=`${icon("network")}<h3>从一个节点开始</h3><p>选择人物、事件或地名，查看它们的原文关联。</p>`;
+  });
+  for (const id of ["analysis-density","analysis-buffers","analysis-events"]) $(id).addEventListener("change",renderAnalysisMap);
   $("overview-reset").addEventListener("click", () => state.maps.overview.setView(MAP_HOME.center, MAP_HOME.zoom));
+  $("overview-clear-filters").addEventListener("click",()=> {
+    $("event-filter").value="all"; $("person-filter").value="all"; renderChapterEvents(); drawOverviewMap();
+  });
   $("chapter-range").addEventListener("input",event=>selectChapter(event.target.value));
   $("chapter-play").addEventListener("click",toggleChapterPlayback);
+  $("chapter-speed").addEventListener("change",()=> { if (state.chapterPlaying) { stopChapterPlayback(); toggleChapterPlayback(); } });
   $("chapter-prev").addEventListener("click",()=>selectChapter(state.selectedChapter-1));
   $("chapter-next").addEventListener("click",()=>selectChapter(state.selectedChapter+1));
   $("place-label-toggle").addEventListener("change",drawOverviewMap);
-  $("event-filter").addEventListener("change",drawOverviewMap);
-  $("person-filter").addEventListener("change",drawOverviewMap);
+  $("event-filter").addEventListener("change",()=> {renderChapterEvents();drawOverviewMap();});
+  $("person-filter").addEventListener("change",()=> {renderChapterEvents();drawOverviewMap();});
   $("search-button").addEventListener("click",searchText);
   $("text-search").addEventListener("keydown",event=>{if(event.key==="Enter")searchText()});
   $("track-person").addEventListener("change",drawTracks);
-  $("place-search").addEventListener("input",()=>renderPlaces());
+  $("place-search").addEventListener("input",()=> {ui.placePage=1;renderPlaces();});
   document.querySelectorAll("[data-place-filter]").forEach(button=>button.addEventListener("click",()=>{
-    document.querySelectorAll("[data-place-filter]").forEach(node=>node.classList.toggle("active",node===button)); renderPlaces(button.dataset.placeFilter);
+    ui.placePage=1; renderPlaces(button.dataset.placeFilter); $("place-table").scrollTop=0;
   }));
+  for (const [id,delta] of [["place-page-prev",-1],["place-page-next",1]]) $(id).addEventListener("click",()=> {
+    ui.placePage+=delta;renderPlaces(); $("place-table").scrollTop=0;
+  });
+  window.addEventListener("scroll",()=> {$("back-top").hidden=window.scrollY<500;},{passive:true});
+  $("back-top").addEventListener("click",()=>window.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"}));
 }
 
 async function main() {
+  $("load-retry").addEventListener("click",()=>location.reload());
   try {
     await loadData();
     setupNavigation();
@@ -746,10 +929,15 @@ async function main() {
     showPage(PAGE_LABELS[initial] ? initial : "overview", false);
     drawTracks(); drawNetwork();
     if (state.chapters.length !== 119) throw new Error(`Expected 119 chapters, loaded ${state.chapters.length}`);
+    $("app-loading").hidden = true;
   } catch (error) {
     console.error(error);
     $("load-status").textContent = "本地数据读取失败";
     $("load-status").style.color = "#d27761";
+    $("app-loading").classList.add("load-error");
+    $("app-loading").querySelector("strong").textContent="本地数据暂未载入";
+    $("loading-message").textContent="请确认本地服务仍在运行，然后重新加载。";
+    $("load-retry").hidden=false;
     toast(`数据加载失败：${error.message}`);
   }
 }

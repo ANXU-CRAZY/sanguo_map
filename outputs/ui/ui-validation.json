@@ -46,7 +46,7 @@
       "status": "PASS",
       "evidence": {
         "query": "曹操",
-        "chapter_hits": 25
+        "chapter_hits": 86
       }
     },
     {
@@ -93,6 +93,57 @@
       "status": "PASS"
     },
     {
+      "name": "directory search and chapter paging preserve original source numbering",
+      "status": "PASS",
+      "evidence": {
+        "source_ordinal_65_original_title_prefix": "第一章",
+        "directory_records": 119
+      }
+    },
+    {
+      "name": "reader font changes real text size and persists after reload",
+      "status": "PASS",
+      "evidence": {
+        "before_px": 18,
+        "persisted_px": 19
+      }
+    },
+    {
+      "name": "search returns all matching chapters and jumps to the correct paragraph",
+      "status": "PASS",
+      "evidence": {
+        "matching_chapters": 86,
+        "correct_paragraph": true
+      }
+    },
+    {
+      "name": "place pagination, Chinese state search and empty reset work",
+      "status": "PASS",
+      "evidence": {
+        "page_size": 50,
+        "second_page_first_record": 51
+      }
+    },
+    {
+      "name": "chapter evidence follows event filters and fast playback",
+      "status": "PASS"
+    },
+    {
+      "name": "track evidence supports record stepping and full-view reset",
+      "status": "PASS"
+    },
+    {
+      "name": "analysis layer controls restore identical existing layer counts",
+      "status": "PASS",
+      "evidence": {
+        "rendered_layers": 97
+      }
+    },
+    {
+      "name": "network keyboard selection highlights neighbors and clears cleanly",
+      "status": "PASS"
+    },
+    {
       "name": "tablet: seven pages without document overflow",
       "status": "PASS",
       "evidence": {
@@ -113,6 +164,29 @@
       "status": "PASS"
     },
     {
+      "name": "small mobile: seven pages fit a 320px viewport",
+      "status": "PASS",
+      "evidence": {
+        "pages": 7,
+        "viewport": "320x740"
+      }
+    },
+    {
+      "name": "mobile chapter speed, play and navigation controls do not overlap",
+      "status": "PASS",
+      "evidence": {
+        "viewports": [
+          390,
+          320
+        ],
+        "overlapping_controls": 0
+      }
+    },
+    {
+      "name": "mobile navigation dismisses when clicking outside",
+      "status": "PASS"
+    },
+    {
       "name": "offline rendering has no JavaScript errors, failed HTTP responses or external requests",
       "status": "PASS"
     }
@@ -120,7 +194,7 @@
   "errors": [],
   "failed_responses": [],
   "external_requests": [],
-  "passed": 14,
+  "passed": 25,
   "failed": 0,
   "status": "PASS"
 }

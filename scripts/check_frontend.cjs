@@ -140,7 +140,9 @@ async function chapter(page, value) {
     assert.equal(await page.locator('#chapter-play').getAttribute('aria-pressed'), 'false');
     assert.equal(await page.locator('.finding-card').count(), 4);
   });
+  await require('./check_frontend_details.cjs')({page,check,go,chapter});
   await check('tablet: seven pages without document overflow', async () => {
+    // Compact visual layout remains a public UI contract across breakpoints.
     await page.setViewportSize({ width: 1024, height: 900 });
     for (const name of ['overview','reader','people','analysis','places','network','findings']) { await go(page, name); await noOverflow(page); }
     return { pages: 7, viewport: '1024x900' };
@@ -162,6 +164,26 @@ async function chapter(page, value) {
   await check('mobile menu closes with Escape', async () => {
     await mobile.locator('#menu-toggle').click(); assert.equal(await mobile.locator('#menu-toggle').getAttribute('aria-expanded'), 'true');
     await mobile.keyboard.press('Escape'); assert.equal(await mobile.locator('#menu-toggle').getAttribute('aria-expanded'), 'false');
+  });
+  await check('small mobile: seven pages fit a 320px viewport',async()=>{
+    await mobile.setViewportSize({width:320,height:740});
+    for(const name of ['overview','reader','people','analysis','places','network','findings']){await go(mobile,name,true);await noOverflow(mobile);}
+    await mobile.setViewportSize({width:390,height:844});return {pages:7,viewport:'320x740'};
+  });
+  await check('mobile chapter speed, play and navigation controls do not overlap',async()=>{
+    for(const width of [390,320]){
+      await mobile.setViewportSize({width,height:844});await go(mobile,'overview',true);
+      const speed=await mobile.locator('#chapter-speed').boundingBox(),play=await mobile.locator('#chapter-play').boundingBox();
+      assert.ok(speed.x+speed.width<=play.x,JSON.stringify({width,speed,play}));
+      assert.ok(play.width>=100);assert.ok(play.height>=36);
+      await mobile.locator('#chapter-next').click();assert.equal(await mobile.locator('#chapter-range').inputValue(),width===390?'2':'3');
+    }
+    await mobile.setViewportSize({width:390,height:844});
+    return {viewports:[390,320],overlapping_controls:0};
+  });
+  await check('mobile navigation dismisses when clicking outside',async()=>{
+    await mobile.locator('#menu-toggle').click();await mobile.locator('footer>span').first().click();
+    assert.equal(await mobile.locator('#menu-toggle').getAttribute('aria-expanded'),'false');
   });
   await check('offline rendering has no JavaScript errors, failed HTTP responses or external requests', async () => {
     assert.deepEqual(report.errors, []); assert.deepEqual(report.failed_responses, []); assert.deepEqual(report.external_requests, []);
