@@ -1,0 +1,126 @@
+{
+  "base_url": "http://127.0.0.1:8765/",
+  "checks": [
+    {
+      "name": "desktop: all seven pages, breadcrumb and active navigation",
+      "status": "PASS",
+      "evidence": {
+        "pages": 7,
+        "viewport": "1440x1000"
+      }
+    },
+    {
+      "name": "chapter navigation: boundaries, title, range and play/pause",
+      "status": "PASS",
+      "evidence": {
+        "first": 1,
+        "last": 119,
+        "playback_advanced": true
+      }
+    },
+    {
+      "name": "ancient place labels can be hidden and restored",
+      "status": "PASS",
+      "evidence": {
+        "visible_labels": 14
+      }
+    },
+    {
+      "name": "2024 administrative layers switch at province/city/county zooms",
+      "status": "PASS",
+      "evidence": {
+        "province": 42,
+        "city": 388,
+        "county": 2898
+      }
+    },
+    {
+      "name": "event evidence opens source text at the selected paragraph",
+      "status": "PASS",
+      "evidence": {
+        "highlighted_paragraph": "ch_001_p_0002"
+      }
+    },
+    {
+      "name": "full text search retains source text highlighting",
+      "status": "PASS",
+      "evidence": {
+        "query": "曹操",
+        "chapter_hits": 25
+      }
+    },
+    {
+      "name": "single-person tracks render independently and update on person change",
+      "status": "PASS",
+      "evidence": [
+        {
+          "name": "刘备",
+          "nodes": 35,
+          "locations": 19,
+          "lines": 1
+        },
+        {
+          "name": "曹操",
+          "nodes": 42,
+          "locations": 21,
+          "lines": 1
+        },
+        {
+          "name": "孙权",
+          "nodes": 29,
+          "locations": 11,
+          "lines": 1
+        }
+      ]
+    },
+    {
+      "name": "place search and keyboard selection open the correct evidence panel",
+      "status": "PASS",
+      "evidence": {
+        "place": "徐州",
+        "no_reference_error": true
+      }
+    },
+    {
+      "name": "knowledge network nodes display evidence",
+      "status": "PASS",
+      "evidence": {
+        "nodes": 72
+      }
+    },
+    {
+      "name": "leaving overview pauses background chapter playback",
+      "status": "PASS"
+    },
+    {
+      "name": "tablet: seven pages without document overflow",
+      "status": "PASS",
+      "evidence": {
+        "pages": 7,
+        "viewport": "1024x900"
+      }
+    },
+    {
+      "name": "mobile: seven pages, accessible navigation and no document overflow",
+      "status": "PASS",
+      "evidence": {
+        "pages": 7,
+        "viewport": "390x844"
+      }
+    },
+    {
+      "name": "mobile menu closes with Escape",
+      "status": "PASS"
+    },
+    {
+      "name": "offline rendering has no JavaScript errors, failed HTTP responses or external requests",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "failed_responses": [],
+  "external_requests": [],
+  "passed": 14,
+  "failed": 0,
+  "status": "PASS"
+}

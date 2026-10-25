@@ -3,58 +3,77 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101d2a">
+  <meta name="theme-color" content="#183e35">
   <title>三国演义 · 历史时空分析</title>
-  <link rel="icon" type="image/svg+xml" href="/frontend/favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="/frontend/favicon.svg?v=4">
   <link rel="stylesheet" href="/frontend/assets/vendor/leaflet.css">
-  <link rel="stylesheet" href="/frontend/style.css?v=2">
-  <style>.target-paragraph{outline:1px solid #d9a453;border-left:3px solid #d9a453;background:#d9a45312;padding:8px;margin-left:-8px;border-radius:3px}</style>
+  <link rel="stylesheet" href="/frontend/style.css?v=4">
 </head>
 <body>
+  <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="icon-map" viewBox="0 0 24 24"><path d="m9 18-6 3V6l6-3 6 3 6-3v15l-6 3-6-3Zm0 0V3m6 18V6"/></symbol>
+    <symbol id="icon-book" viewBox="0 0 24 24"><path d="M12 5v16M3 4c4-1 6 0 9 2 3-2 5-3 9-2v15c-4-1-6 0-9 2-3-2-5-3-9-2V4Z"/></symbol>
+    <symbol id="icon-route" viewBox="0 0 24 24"><circle cx="6" cy="5" r="3"/><circle cx="18" cy="19" r="3"/><path d="M6 8v4a3 3 0 0 0 3 3h6a3 3 0 0 0 0-6h-2m5 7v-3"/></symbol>
+    <symbol id="icon-swords" viewBox="0 0 24 24"><path d="m3 3 5 1 10 10-4 4L4 8 3 3Zm13 3 4-3 1 5-6 6M3 21l5-5m8-2 5 5m-7-3 5 5M3 16l5 5"/></symbol>
+    <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+    <symbol id="icon-network" viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><path d="m10.5 8-4 8m7-8 4 8M8 19h8"/></symbol>
+    <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 3v17h17M8 15v-4m5 4V6m5 9V9"/></symbol>
+    <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+    <symbol id="icon-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="icon-reset" viewBox="0 0 24 24"><path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/></symbol>
+    <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 2H5v20h14V7l-5-5Zm0 0v6h5M8 12h8m-8 4h6"/></symbol>
+    <symbol id="icon-people" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a7 7 0 0 1 14 0v2m0-18a4 4 0 0 1 0 8m3 4a6 6 0 0 1 3 6"/></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="icon-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m16 8-2 6-6 2 2-6 6-2Z"/></symbol>
+  </defs></svg>
   <header class="topbar">
     <a class="brand" href="#overview" aria-label="返回时空总览">
-      <span class="brand-mark">疆</span>
-      <span><strong>三国时空</strong><small>SPATIAL HUMANITIES LAB</small></span>
+      <span class="brand-mark">三<br>国</span>
+      <span><strong>三国时空</strong><small>THE SANGUO ATLAS</small></span>
     </a>
     <div class="source-badge"><span class="live-dot"></span><span>119 章 · 原文驱动</span></div>
-    <button id="menu-toggle" class="menu-toggle" aria-label="打开导航">☰</button>
+    <p class="nav-caption">探索工作台 <span>EXPLORE</span></p>
+    <button id="menu-toggle" class="menu-toggle" aria-label="打开导航" aria-controls="main-nav" aria-expanded="false">☰</button>
     <nav id="main-nav" aria-label="主导航">
-      <button class="nav-item active" data-page="overview">时空总览</button>
-      <button class="nav-item" data-page="reader">原著阅读</button>
-      <button class="nav-item" data-page="people">人物行踪</button>
-      <button class="nav-item" data-page="analysis">战争分析</button>
-      <button class="nav-item" data-page="places">历史地名</button>
-      <button class="nav-item" data-page="network">知识网络</button>
-      <button class="nav-item" data-page="findings">研究发现</button>
+      <button class="nav-item active" data-page="overview" aria-current="page"><svg class="icon"><use href="#icon-map"/></svg><span>时空总览</span><small>01</small></button>
+      <button class="nav-item" data-page="reader"><svg class="icon"><use href="#icon-book"/></svg><span>原著阅读</span><small>02</small></button>
+      <button class="nav-item" data-page="people"><svg class="icon"><use href="#icon-route"/></svg><span>人物行踪</span><small>03</small></button>
+      <button class="nav-item" data-page="analysis"><svg class="icon"><use href="#icon-swords"/></svg><span>战争分析</span><small>04</small></button>
+      <button class="nav-item" data-page="places"><svg class="icon"><use href="#icon-pin"/></svg><span>历史地名</span><small>05</small></button>
+      <button class="nav-item" data-page="network"><svg class="icon"><use href="#icon-network"/></svg><span>知识网络</span><small>06</small></button>
+      <button class="nav-item" data-page="findings"><svg class="icon"><use href="#icon-chart"/></svg><span>研究发现</span><small>07</small></button>
     </nav>
-    <div class="header-meta"><span class="meta-key">数据状态</span><span id="load-status">正在读取本地数据…</span></div>
+    <div class="sidebar-note"><svg class="icon"><use href="#icon-compass"/></svg><p>以文为据，以图见史。</p><span>在字里行间，发现叙事的山河。</span><a href="/docs/FINAL_PROJECT_REPORT.md" target="_blank" rel="noopener">了解数据与方法 <span aria-hidden="true">↗</span></a></div>
+    <div class="header-meta"><span class="live-dot"></span><div><span class="meta-key">本地工作空间</span><span id="load-status" role="status">正在读取本地数据…</span></div></div>
   </header>
 
+  <div class="workspace-bar"><div class="workspace-breadcrumb"><span>三国演义</span><span aria-hidden="true">/</span><strong id="current-page-label">时空总览</strong></div><div class="workspace-meta"><span><svg class="icon"><use href="#icon-check"/></svg> 原文可溯</span><span class="workspace-offline"><span class="live-dot"></span>离线探索</span><a href="https://github.com/ANXU-CRAZY/sanguo_map" target="_blank" rel="noopener" aria-label="打开项目 GitHub 仓库">GitHub ↗</a></div></div>
   <main>
     <section class="page active" id="page-overview">
       <div class="page-heading">
-        <div><p class="eyebrow">TEXT · PLACE · NARRATIVE ORDER</p><h1>小说叙事的空间结构</h1><p class="lede">从原文段落出发，查看地名命中、事件候选和可追溯的空间位置。</p></div>
-        <div class="mode-chip"><span>当前编码路径</span><strong>paper_faithful</strong><small>无模型 API 推理</small></div>
+        <div><p class="eyebrow"><span class="eyebrow-line"></span> A LITERARY ATLAS OF THE THREE KINGDOMS</p><h1>在字里行间，遇见三国<span class="heading-period">。</span></h1><p class="lede">以原文章节为线索，探索人物、地名与事件的空间关联。</p></div>
+        <a class="hero-link" href="#reader"><svg class="icon"><use href="#icon-book"/></svg> 翻开原著 <svg class="icon"><use href="#icon-arrow"/></svg></a>
       </div>
       <div class="stat-grid" id="overview-stats"></div>
       <div class="overview-grid">
         <section class="panel map-panel">
           <div class="panel-head map-tools">
-            <div><h2>地名与事件候选</h2><p>点位仅表示地名志匹配坐标，历史含义仍待核验</p></div>
+            <div><h2><svg class="icon"><use href="#icon-map"/></svg>叙事地图 <span class="subtle-tag">空间探索</span></h2><p>古地名、事件与原文，在这里相遇</p></div>
             <div class="map-controls">
               <label>候选类型<select id="event-filter"><option value="all">全部类型</option><option value="war">战争</option><option value="movement">行军 / 移动</option><option value="politics">政治</option><option value="alliance">结盟</option><option value="appointment">任职</option><option value="death">死亡</option></select></label>
               <label>人物<select id="person-filter"><option value="all">所有人物</option></select></label>
+              <button id="overview-reset" class="icon-button" title="恢复地图初始视野" aria-label="恢复地图初始视野"><svg class="icon"><use href="#icon-reset"/></svg></button>
             </div>
           </div>
-          <div id="overview-map" class="map-canvas" role="application" aria-label="历史地名候选互动地图"></div>
+          <div class="map-stage"><div id="overview-map" class="map-canvas" role="application" aria-label="历史地名候选互动地图"></div><div class="map-inscription" aria-hidden="true"><span>三国叙事图景</span><small>PLACES BETWEEN THE LINES</small></div><div class="map-compass" aria-hidden="true"><span>N</span><svg viewBox="0 0 20 32"><path d="M10 1 17 29 10 23 3 29Z" fill="none" stroke="currentColor"/><path d="M10 1v22l7 6Z" fill="currentColor"/></svg></div></div>
           <div class="map-legend"><span><i class="legend-dot war-dot"></i>战争事件候选</span><span><i class="legend-dot place-dot"></i>历史地名候选坐标</span><label class="label-toggle"><input id="place-label-toggle" type="checkbox" checked>古地名标注</label><span class="legend-note">标注取自原文地名；现代边界仅作方位参照，不是三国疆域</span></div>
-          <div class="timeline-control"><div class="timeline-label"><span>叙事时间轴 · 播放会逐章更新地图与证据列表</span><strong id="chapter-value">第 1 / 119 章</strong></div><div class="timeline-actions"><button id="chapter-prev" type="button" title="上一章">上一章</button><input id="chapter-range" type="range" min="1" max="119" value="1" aria-label="小说章节时间轴"><button id="chapter-next" type="button" title="下一章">下一章</button><button id="chapter-play" class="chapter-play" type="button" aria-pressed="false">▶ 逐章播放</button></div><div class="timeline-ends"><span>开篇</span><span>三分归一统</span></div><p id="map-dynamic-status" class="map-dynamic-status" aria-live="polite"></p></div>
+          <div class="timeline-control"><div class="timeline-label"><div><span class="timeline-kicker">叙事时间轴</span><span id="timeline-chapter-title" class="timeline-chapter-title"></span></div><strong id="chapter-value">第 1 / 119 章</strong></div><div class="timeline-actions"><button id="chapter-prev" type="button" title="上一章" aria-label="上一章">‹</button><input id="chapter-range" type="range" min="1" max="119" value="1" aria-label="小说章节时间轴"><button id="chapter-next" type="button" title="下一章" aria-label="下一章">›</button><button id="chapter-play" class="chapter-play" type="button" aria-pressed="false">▶ 逐章播放</button></div><div class="timeline-ends"><span>开篇 · 001</span><span>119 · 三分归一统</span></div><p id="map-dynamic-status" class="map-dynamic-status" aria-live="polite"></p></div>
         </section>
         <aside class="panel detail-panel">
-          <div class="panel-head"><div><p class="eyebrow">EVIDENCE PANEL</p><h2>原文证据</h2></div><span class="pill" id="selection-kind">等待选择</span></div>
-          <div id="selection-content" class="empty-state"><span class="empty-icon">⌖</span><p>选择地图点位或事件候选，查看原文段落、章节、匹配状态与坐标来源。</p></div>
+          <div class="panel-head"><div><p class="eyebrow">THE WORDS BEHIND THE MAP</p><h2>原文证据</h2></div><span class="pill" id="selection-kind">待选择</span></div>
+          <div id="selection-content" class="empty-state evidence-empty"><div class="evidence-illustration" aria-hidden="true"><svg viewBox="0 0 120 94" fill="none"><path d="M25 27h48l14 14v42H25Z" fill="#f9f7f0" stroke="#b7c6b2"/><path d="M73 27v15h14M36 53h38M36 62h32M36 71h20" stroke="#b7c6b2"/><circle cx="76" cy="29" r="21" fill="#f0f3eb" stroke="#7d9a86"/><path d="m85 20-5 14-14 5 5-14 14-5Z" stroke="#527960"/><path d="M16 48h9m61 17h15M47 15v7m-3-3h6" stroke="#b8aa82"/></svg></div><h3>一处地名，一段往事</h3><p>点击地图点位或下方叙事线索，<br>回到文字发生的地方。</p></div>
           <div class="panel-divider"></div>
-          <div class="side-list-head"><h3>当前章节的空间候选</h3><span id="chapter-event-count">0 条</span></div>
+          <div class="side-list-head"><h3><span class="section-dot"></span>本章叙事线索</h3><span id="chapter-event-count">0 条</span></div>
           <div id="chapter-event-list" class="compact-list"></div>
         </aside>
       </div>
@@ -103,6 +122,6 @@
   <footer><span>三国时空 · 本地科研原型</span><span>小说叙事 ≠ 历史事实 · 所有位置均保留来源与审查状态</span><a href="/docs/FINAL_PROJECT_REPORT.md">项目方法与质量报告</a></footer>
   <div id="toast" role="status" aria-live="polite"></div>
   <script src="/frontend/assets/vendor/leaflet.js"></script>
-  <script src="/frontend/app.js?v=3"></script>
+  <script src="/frontend/app.js?v=4"></script>
 </body>
 </html>

@@ -1,4 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect x="4" y="4" width="56" height="56" rx="9" fill="#101d2a" stroke="#bb8550" stroke-width="2"/>
-  <text x="32" y="44" text-anchor="middle" fill="#e8b76b" font-family="serif" font-size="37">疆</text>
+  <rect x="2" y="2" width="60" height="60" rx="10" fill="#183e35"/>
+  <rect x="13" y="8" width="38" height="48" rx="1" fill="none" stroke="#c9b78b"/>
+  <rect x="16" y="11" width="32" height="42" fill="none" stroke="#c9b78b" stroke-opacity=".6"/>
+  <text x="32" y="29" text-anchor="middle" fill="#ddcea6" font-family="serif" font-size="19">三</text>
+  <text x="32" y="49" text-anchor="middle" fill="#ddcea6" font-family="serif" font-size="19">国</text>
 </svg>
