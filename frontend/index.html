@@ -7,8 +7,9 @@
   <title>三国演义 · 历史时空分析</title>
   <link rel="icon" type="image/svg+xml" href="/frontend/favicon.svg?v=4">
   <link rel="stylesheet" href="/frontend/assets/vendor/leaflet.css">
-  <link rel="stylesheet" href="/frontend/style.css?v=6">
-  <link rel="stylesheet" href="/frontend/cockpit.css?v=6">
+  <link rel="stylesheet" href="/frontend/style.css?v=7">
+  <link rel="stylesheet" href="/frontend/cockpit.css?v=7">
+  <link rel="stylesheet" href="/frontend/interactions.css?v=7">
 </head>
 <body>
   <a class="skip-link" href="#workspace-main">跳到主要内容</a>
@@ -47,6 +48,7 @@
       <button class="nav-item" data-page="places"><svg class="icon"><use href="#icon-pin"/></svg><span>历史地名</span><small>05</small></button>
       <button class="nav-item" data-page="network"><svg class="icon"><use href="#icon-network"/></svg><span>知识网络</span><small>06</small></button>
       <button class="nav-item" data-page="findings"><svg class="icon"><use href="#icon-chart"/></svg><span>研究发现</span><small>07</small></button>
+      <button class="nav-item" data-page="assistant"><svg class="icon"><use href="#icon-search"/></svg><span>地图问答</span><small>08</small></button>
     </nav>
     <div class="sidebar-note"><svg class="icon"><use href="#icon-compass"/></svg><p>以文为据，以图见史。</p><span>在字里行间，发现叙事的山河。</span><a href="/docs/FINAL_PROJECT_REPORT.md" target="_blank" rel="noopener">了解数据与方法 <span aria-hidden="true">↗</span></a></div>
     <div class="header-meta"><span class="live-dot"></span><div><span class="meta-key">本地工作空间</span><span id="load-status" role="status">正在读取本地数据…</span></div></div>
@@ -97,8 +99,12 @@
 
     <section class="page" id="page-people">
       <div class="page-heading"><div><p class="eyebrow">CHARACTER · PLACE CO-MENTIONS</p><h1>人物活动的叙事顺序</h1><p class="lede">同段人物与地点共现用于生成候选活动节点，不等同于实际到访记录。</p></div></div>
-      <div class="people-toolbar panel"><span id="track-monogram" class="person-monogram" aria-hidden="true">人</span><label for="track-person">选择人物<select id="track-person"></select></label><span class="pill" id="track-status" aria-live="polite">正在生成单人轨迹</span><span class="muted">按原文顺序连线 · 点击条目定位</span></div>
-      <div class="people-grid"><section class="panel"><div class="panel-head"><div><p class="eyebrow">ONE PERSON · NARRATIVE ORDER</p><h2 id="track-map-title">人物叙事轨迹</h2></div><button id="track-reset" class="icon-button" title="查看该人物完整轨迹" aria-label="查看该人物完整轨迹"><svg class="icon"><use href="#icon-reset"/></svg></button></div><div id="track-map" class="map-canvas" aria-label="单人物叙事地点地图"></div><p class="caption">每个点来自该人物与地名的同段共现，标签保留原文古地名词面。连线按章节顺序表示叙事地点序列，不证明人物实际到访或行军路线；点击节点可查看原文出处。</p></section><section class="panel track-evidence-panel"><div class="panel-head"><div><p class="eyebrow">SOURCE LINKS</p><h2>叙事地点与出处</h2></div></div><div id="track-records" class="compact-list tall-list"></div><div class="record-pagination"><button id="track-prev-record" class="icon-button" aria-label="上一个叙事地点">‹</button><span id="track-record-position">选择一条地点证据</span><button id="track-next-record" class="icon-button" aria-label="下一个叙事地点">›</button></div></section></div>
+      <div class="people-toolbar panel"><span id="track-monogram" class="person-monogram" aria-hidden="true">人</span><label for="track-person">选择人物<select id="track-person"></select></label><span class="pill" id="track-status" aria-live="polite">正在生成单人轨迹</span><div class="track-mode" role="group" aria-label="轨迹模式"><button data-track-mode="single" aria-pressed="true">单人轨迹</button><button data-track-mode="compare" aria-pressed="false">多人对比</button></div></div>
+      <fieldset id="track-compare" class="panel track-compare" hidden><legend>选择对比人物 · 最多 4 人</legend><div id="track-compare-options"></div><p id="track-compare-hint" class="caption" role="status">每人独立连线，使用同一原文章节进度。</p></fieldset>
+      <div class="people-grid"><section class="panel"><div class="panel-head"><div><p class="eyebrow">PEOPLE · NARRATIVE PLAYBACK</p><h2 id="track-map-title">人物叙事轨迹</h2></div><button id="track-reset" class="icon-button" title="查看所选人物完整轨迹" aria-label="查看所选人物完整轨迹"><svg class="icon"><use href="#icon-reset"/></svg></button></div><div class="track-player"><div class="track-player-heading"><div><p class="eyebrow">NARRATIVE PLAYBACK · 原文顺序</p><strong id="track-chapter-label">完整轨迹</strong><p id="track-chapter-title"></p></div><span id="track-play-state" class="pill" role="status">完整视图</span></div>
+      <label class="sr-only" for="track-range">轨迹章节进度</label><input id="track-range" type="range" min="1" max="119" value="119">
+      <div class="track-play-controls"><button id="track-step-back" class="icon-button" aria-label="轨迹上一章">‹</button><button id="track-play" class="primary-button" aria-pressed="false">▶ 播放轨迹</button><button id="track-step-next" class="icon-button" aria-label="轨迹下一章">›</button><label class="track-speed">倍速<select id="track-speed" aria-label="轨迹播放速度"><option value="1400">0.5×</option><option value="700" selected>1×</option><option value="350">2×</option><option value="175">4×</option></select></label><button id="track-restart" class="text-button">从头开始</button><label class="track-follow"><input id="track-follow" type="checkbox">跟随最新证据</label></div></div><div id="track-map" class="map-canvas" aria-label="人物叙事地点地图"></div>
+      <div id="track-legend" class="track-legend"></div><p class="caption">播放按源文件章节顺序展开；亮环标记各人物最近一条地点证据，不表示此刻真实位置。每个点来自人物与地名的同段共现，标签保留原文古地名词面。连线按章节顺序表示叙事地点序列，不证明人物实际到访或行军路线；点击节点可查看原文出处。</p></section><section class="panel track-evidence-panel"><div class="panel-head"><div><p class="eyebrow">SOURCE LINKS</p><h2>叙事地点与出处</h2></div></div><div id="track-records" class="compact-list tall-list"></div><div class="record-pagination"><button id="track-prev-record" class="icon-button" aria-label="上一个叙事地点">‹</button><span id="track-record-position">选择一条地点证据</span><button id="track-next-record" class="icon-button" aria-label="下一个叙事地点">›</button></div></section></div>
     </section>
 
     <section class="page" id="page-analysis">
@@ -124,13 +130,21 @@
       <div class="panel"><div class="panel-head"><div><p class="eyebrow">EVIDENCE FIRST</p><h2>当前可以回答与不能回答的问题</h2></div></div><div class="finding-columns"><div><h3>当前数据支持</h3><ul id="supported-questions"></ul></div><div><h3>当前数据不支持</h3><ul id="unsupported-questions"></ul></div></div></div>
       <div class="panel source-card"><div><p class="eyebrow">SOURCE SNAPSHOT</p><h2>数据与算法版本</h2></div><div id="source-snapshot"></div></div>
     </section>
+
+    <section class="page" id="page-assistant">
+      <div class="page-heading"><div><p class="eyebrow">MAP ASSISTANT · LOCAL EVIDENCE</p><h1>从地图里，问一段三国</h1><p class="lede">问地名、找人物足迹、比较叙事交集。回答来自本地 119 章与地名志结果，每一条观察都能回到原文。</p></div></div>
+      <div class="assistant-layout"><section class="panel assistant-chat"><div class="panel-head"><div><p class="eyebrow">有出处的地图问答</p><h2>三国地图助手</h2></div><span class="pill">离线检索分析</span></div><p class="caption">当前为本地规则与数据检索助手，非大模型推理；不联网、不产生 API 费用。叙事统计用于发现线索，不等同于真实历史结论。</p><div id="assistant-messages" class="assistant-messages" role="log" aria-label="地图问答记录" aria-live="polite"><article class="assistant-answer"><p>想从哪里开始？可以问“洛阳有什么故事”“刘备和曹操有哪些共同地名”，或“地图里有什么有趣的现象”。</p></article></div><form id="assistant-form"><label class="sr-only" for="assistant-input">询问地图数据</label><textarea id="assistant-input" rows="2" maxlength="500" placeholder="例如：刘备和曹操有哪些共同地名？"></textarea><div class="assistant-compose"><span>Enter 发送 · Shift+Enter 换行</span><button class="primary-button" type="submit">询问地图 ↗</button></div></form></section><aside class="panel assistant-suggestions"><p class="eyebrow">EXPLORE THE NARRATIVE</p><h2>试着问一问</h2><button data-ask="洛阳有什么故事？">洛阳在小说里扮演什么角色？</button><button data-ask="刘备和曹操有哪些共同地名？">两条人物线索在哪里交汇？</button><button data-ask="刘备的轨迹经过哪些地方？">沿刘备的叙事地点走一遍</button><button data-ask="地图里有什么有趣的现象？">发现地图里隐藏的叙事线索</button><button data-ask="哪些地名出现得最多？">小说最常写到哪些地方？</button><div class="evidence-note">数字仅统计当前文本与规则提取记录。共现不代表会面、驻扎或实际到访；未定位地名也会保留文本证据。</div></aside></div>
+    </section>
+    <dialog id="place-profile" class="place-profile" aria-labelledby="place-profile-title"><header><div><p class="eyebrow">PLACE DOSSIER · 原文地名档案</p><h2 id="place-profile-title"></h2></div><button id="place-profile-close" class="icon-button" aria-label="关闭地点档案">×</button></header><div id="place-profile-body"></div></dialog>
   </main>
 
   <footer><span>三国时空 · 本地科研原型</span><span>小说叙事 ≠ 历史事实 · 所有位置均保留来源与审查状态</span><a href="/docs/FINAL_PROJECT_REPORT.md">项目方法与质量报告</a></footer>
   <div id="toast" role="status" aria-live="polite"></div>
   <button id="back-top" class="back-top" aria-label="返回页面顶部" title="返回顶部" hidden>↑</button>
   <script src="/frontend/assets/vendor/leaflet.js"></script>
-  <script src="/frontend/app.js?v=6"></script>
-  <script src="/frontend/cockpit.js?v=6"></script>
+  <script src="/frontend/app.js?v=7"></script>
+  <script src="/frontend/tracks.js?v=7"></script>
+  <script src="/frontend/map-assistant.js?v=7"></script>
+  <script src="/frontend/cockpit.js?v=7"></script>
 </body>
 </html>

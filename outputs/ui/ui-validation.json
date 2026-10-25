@@ -2,10 +2,10 @@
   "base_url": "http://127.0.0.1:8765/",
   "checks": [
     {
-      "name": "desktop: all seven pages, breadcrumb and active navigation",
+      "name": "desktop: all eight pages, breadcrumb and active navigation",
       "status": "PASS",
       "evidence": {
-        "pages": 7,
+        "pages": 8,
         "viewport": "1440x1000"
       }
     },
@@ -198,18 +198,71 @@
       }
     },
     {
-      "name": "tablet: seven pages without document overflow",
+      "name": "single playback: pause, rewind and source-bounded nodes",
       "status": "PASS",
       "evidence": {
-        "pages": 7,
+        "full_nodes": 35,
+        "chapter_5": {
+          "actual": 2,
+          "expected": 2,
+          "future": 0
+        },
+        "pause_stable": true
+      }
+    },
+    {
+      "name": "comparison: shared chapter clock with independent colored paths",
+      "status": "PASS",
+      "evidence": {
+        "people": 3,
+        "independent_lines": 3,
+        "no_cross_person_segments": true
+      }
+    },
+    {
+      "name": "comparison: four-person cap, empty selection and timer lifecycle",
+      "status": "PASS",
+      "evidence": {
+        "max_people": 4,
+        "empty_safe": true,
+        "page_exit_pauses": true,
+        "selection_change_pauses": true
+      }
+    },
+    {
+      "name": "place labels: direct click opens dossier with real source excerpts",
+      "status": "PASS",
+      "evidence": {
+        "place": "洛阳",
+        "paragraph": "ch_001_p_0005"
+      }
+    },
+    {
+      "name": "local assistant: factual counts, evidence and no unsupported history",
+      "status": "PASS",
+      "evidence": {
+        "luoyang_occurrences": 111,
+        "source_ids_valid": true,
+        "dynamic_map_action": true,
+        "unsupported_history_declined": true,
+        "place_comparison": true,
+        "event_candidates_labeled": true,
+        "html_escaped": true
+      }
+    },
+    {
+      "name": "tablet: eight pages without document overflow",
+      "status": "PASS",
+      "evidence": {
+        "pages": 8,
         "viewport": "1024x900"
       }
     },
     {
-      "name": "mobile: seven pages, accessible navigation and no document overflow",
+      "name": "mobile: eight pages, accessible navigation and no document overflow",
       "status": "PASS",
       "evidence": {
-        "pages": 7,
+        "pages": 8,
         "viewport": "390x844"
       }
     },
@@ -218,10 +271,10 @@
       "status": "PASS"
     },
     {
-      "name": "small mobile: seven pages fit a 320px viewport",
+      "name": "small mobile: eight pages fit a 320px viewport",
       "status": "PASS",
       "evidence": {
-        "pages": 7,
+        "pages": 8,
         "viewport": "320x740"
       }
     },
@@ -249,6 +302,19 @@
       "status": "PASS"
     },
     {
+      "name": "mobile playback, comparison, dossiers and assistant fit 390px and 320px",
+      "status": "PASS",
+      "evidence": {
+        "widths": [
+          390,
+          320
+        ],
+        "playback_advanced": true,
+        "profile_question_roundtrip": true,
+        "overflow": false
+      }
+    },
+    {
       "name": "offline rendering has no JavaScript errors, failed HTTP responses or external requests",
       "status": "PASS"
     }
@@ -256,7 +322,7 @@
   "errors": [],
   "failed_responses": [],
   "external_requests": [],
-  "passed": 34,
+  "passed": 40,
   "failed": 0,
   "status": "PASS"
 }

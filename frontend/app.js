@@ -1,6 +1,6 @@
 /* Local-only WebGIS client. All narrative claims come from generated local source evidence. */
 const $ = (id) => document.getElementById(id);
-const PAGE_LABELS = { overview: "时空总览", reader: "原著阅读", people: "人物行踪", analysis: "战争分析", places: "历史地名", network: "知识网络", findings: "研究发现" };
+const PAGE_LABELS = { overview: "时空总览", reader: "原著阅读", people: "人物行踪", analysis: "战争分析", places: "历史地名", network: "知识网络", findings: "研究发现", assistant: "地图问答" };
 const EVENT_LABELS = { war: "战争", movement: "行军", politics: "政治", alliance: "结盟", appointment: "任职", death: "死亡" };
 const STATUS_LABELS = { OK: "唯一坐标", MULTIPLE_MATCHES: "多候选", NO_MATCH: "未匹配", NOT_RUN_LIMIT: "未运行", COORDINATE_FAILURE: "坐标异常" };
 const MAP_HOME = { center: [33.5, 110], zoom: 4.5 };
@@ -83,7 +83,7 @@ function setupNavigation() {
       $("menu-toggle").setAttribute("aria-label", "打开导航");
     }
   });
-  window.addEventListener("hashchange", () => { const name = location.hash.slice(1); if (["overview","reader","people","analysis","places","network","findings"].includes(name)) showPage(name, false); });
+  window.addEventListener("hashchange", () => { const name = location.hash.slice(1); if (Object.hasOwn(PAGE_LABELS, name)) showPage(name, false); });
 }
 function showPage(name, updateHash = true) {
   if (!PAGE_LABELS[name]) return;
@@ -93,6 +93,7 @@ function showPage(name, updateHash = true) {
   document.body.classList.toggle("is-cockpit", name === "overview");
   if (name !== "overview") document.body.classList.remove("map-focus");
   if (name !== "overview") stopChapterPlayback();
+  if (name !== "people") stopTrackPlayback();
   $("current-page-label").textContent = PAGE_LABELS[name];
   document.title = `${PAGE_LABELS[name]} · 三国时空`;
   document.querySelectorAll(".page").forEach(node => node.classList.toggle("active", node.id === `page-${name}`));
@@ -394,12 +395,15 @@ function setReaderFont(value, persist = true) {
   if (persist) { try { localStorage.setItem("sanguo-reader-font", String(ui.readerFont)); } catch (_) { /* Preference is optional. */ } }
 }
 
-function popupNode(title, subtitle, excerpt, action) {
+function popupNode(title, subtitle, excerpt, action, placeNames = []) {
   const box = document.createElement("div");
   const h = document.createElement("strong"); h.textContent = title; box.append(h);
   const small = document.createElement("div"); small.textContent = subtitle; box.append(small);
   const p = document.createElement("p"); p.textContent = excerpt || "无可展示的原文摘要"; box.append(p);
   const button = document.createElement("button"); button.textContent = "查看原文证据"; button.className = "primary-button"; button.addEventListener("click", action); box.append(button);
+  for (const name of placeNames) {
+    const detail = document.createElement("button"); detail.className = "text-button"; detail.textContent = `${name} · 地点介绍`; detail.addEventListener("click", () => openPlaceProfile(name)); box.append(detail);
+  }
   return box;
 }
 function selectEvent(event) {
@@ -428,6 +432,7 @@ function selectPlace(geocode) {
   const periods = { OVERLAPS_PROJECT_ANALYSIS_WINDOW: "与研究年代范围重叠", HISTORIC_PERIOD_UNKNOWN: "地名志年代未知", OUTSIDE_PROJECT_ANALYSIS_WINDOW: "不在研究年代范围内", NO_HISTORIC_GAZETTEER_MATCH: "历史库未匹配", MULTIPLE_HISTORIC_CANDIDATES: "历史库存在多候选" };
   const paragraphs = [...new Map(features.map(row => [row.paragraph_id, row])).values()];
   content.innerHTML = `<h3>${escapeHTML(geocode.historical_toponym)}</h3><div class="evidence-meta"><span>${escapeHTML(period)}</span><span>${features.length} 处提及 · ${paragraphs.length} 段原文</span></div><dl class="place-detail-grid"><div><dt>匹配坐标 · 经度 / 纬度</dt><dd>${geocode.longitude == null ? "尚无唯一坐标" : `${Number(geocode.longitude).toFixed(5)}, ${Number(geocode.latitude).toFixed(5)}`}</dd></div><div><dt>最大误差距离（MED）</dt><dd>${geocode.maximum_error_distance_km == null ? "未确定" : `${Number(geocode.maximum_error_distance_km).toFixed(2)} km`}</dd></div></dl><div class="evidence-note">历史库独立筛查：${escapeHTML(STATUS_LABELS[hs] || "未取得唯一结果")}；${escapeHTML(periods[hp] || "年代状态待核验")}。${escapeHTML(hx)}。地名含义仍待核验。</div><details class="evidence-technical"><summary>地名志候选与原始审核状态</summary><p>${escapeHTML((geocode.matched_gazetteer || []).join("、") || "无候选编号")}</p><code>${escapeHTML(geocode.match_status || "UNKNOWN")} · ${escapeHTML(hs)} · ${escapeHTML(hp)}</code></details><h4 class="evidence-section-label">原文出处 <span>展示 ${Math.min(6, paragraphs.length)} / ${paragraphs.length} 段</span></h4><div class="source-preview-list">${paragraphs.slice(0,6).map(row=>`<div class="list-row" data-paragraph="${escapeHTML(row.paragraph_id)}" data-chapter="${escapeHTML(row.chapter_id)}"><div class="list-row-meta">第 ${row.chapter_order} 章 · ${escapeHTML(row.paragraph_id)}</div><div class="list-row-excerpt">${escapeHTML(paragraphText(row.paragraph_id).slice(0,160) || row.source_file)}</div></div>`).join("")}</div>`;
+  const profile = document.createElement("button"); profile.className="secondary-button"; profile.textContent="地点介绍与叙事档案"; profile.addEventListener("click",()=>openPlaceProfile(geocode.historical_toponym)); content.prepend(profile);
   content.querySelectorAll("[data-paragraph]").forEach(node => bindRecordAction(node, () => jumpToParagraph(node.dataset.chapter, node.dataset.paragraph)));
 }
 function jumpToParagraph(chapterId, paragraphId) {
@@ -462,7 +467,7 @@ function drawOverviewMap() {
     visibleEventCount += 1;
     const war = props.event_type_candidate === "war";
     const marker = L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], { radius: war ? 6 : 4, color: war ? "#8d473e" : "#397f79", weight: 1, fillColor: war ? "#c76556" : "#66aaa0", fillOpacity: .78 });
-    marker.bindPopup(popupNode(`${EVENT_LABELS[props.event_type_candidate] || props.event_type_candidate} · ${props.historical_toponym}`, `第 ${props.chapter_order} 章 · ${props.paragraph_id}`, props.source_excerpt, () => jumpToParagraph(props.chapter_id, props.paragraph_id)));
+    marker.bindPopup(popupNode(`${EVENT_LABELS[props.event_type_candidate] || props.event_type_candidate} · ${props.historical_toponym}`, `第 ${props.chapter_order} 章 · ${props.paragraph_id}`, props.source_excerpt, () => jumpToParagraph(props.chapter_id, props.paragraph_id), [props.historical_toponym]));
     marker.on("click", () => {
       const event = state.events.find(row => row.event_id === props.event_id);
       if (event) selectEvent(event);
@@ -497,9 +502,10 @@ function drawOverviewMap() {
     const inView = viewBounds.contains([result.latitude,result.longitude]);
     const placement = showLabels && inView && labelCount < labelLimit ? findLabelPlacement(map, [result.latitude,result.longitude], ancientLabel, labelBoxes) : null;
     if (placement) {
-      marker.bindTooltip(escapeHTML(ancientLabel),{permanent:true,...placement,className:"historical-place-label",opacity:.98});
+      bindHistoricalPlaceLabel(marker, ancientLabel, placement, names);
       labelCount += 1;
     }
+    marker.on("click",()=>openPlaceProfile(result.historical_toponym, names));
     marker.addTo(group);
   });
   $("map-dynamic-status").textContent = `第 ${state.selectedChapter} 章及以前 · ${number(visibleEventCount)} 条事件候选 · ${number(placeGroups.length)} 处有坐标的原文地名${showLabels ? ` · 当前视野标注 ${number(labelCount)} 个古地名` : " · 地名标签已关闭"}`;
@@ -542,15 +548,8 @@ function fillPeopleSelectors() {
     el.innerHTML = id === "person-filter" ? `<option value="all">所有人物</option>${personOptions}` : personOptions;
   }
 }
-function drawTracks() {
-  const group = state.layers.tracks; if (!group) return;
-  group.clearLayers();
-  ui.trackLabels = []; ui.trackMarkers = new Map(); ui.trackIndex = -1;
-  const personId = $("track-person")?.value;
+function collectTrackNodes(personId) {
   const person = state.people.find(row => row.character_id === personId);
-  $("track-monogram").textContent = person?.canonical_name.slice(0,1) || "人";
-  const map = state.maps.tracks;
-  const container = map?.getContainer();
   const mentions = state.peopleMentions.filter(row => row.character_ids.includes(personId));
   const occurrences = new Map();
   for (const personMention of mentions) {
@@ -578,99 +577,9 @@ function drawTracks() {
     (a.row.source_char_start || 0) - (b.row.source_char_start || 0) ||
     a.row.historical_toponym.localeCompare(b.row.historical_toponym, "zh-CN")
   );
-  const lineCoordinates = [];
-  for (const node of nodes) {
-    const point = [node.latitude, node.longitude];
-    const previous = lineCoordinates.at(-1);
-    if (!previous || previous[0] !== point[0] || previous[1] !== point[1]) lineCoordinates.push(point);
-  }
-  if (lineCoordinates.length >= 2) {
-    L.polyline(lineCoordinates, {
-      color: "#a68452", weight: 2.5, opacity: .76, dashArray: "6 5",
-      lineCap: "round", lineJoin: "round", className: "person-track-line", interactive: false
-    }).addTo(group);
-  }
-  const byCoordinate = new Map();
-  for (const node of nodes) {
-    const key = `${node.longitude.toFixed(5)},${node.latitude.toFixed(5)}`;
-    if (!byCoordinate.has(key)) byCoordinate.set(key, []);
-    byCoordinate.get(key).push(node);
-  }
-  const markerByCoordinate = new Map();
-  for (const [key, rows] of byCoordinate) {
-    const first = rows[0];
-    const names = [...new Set(rows.map(row => row.row.historical_toponym))];
-    const marker = L.circleMarker([first.latitude, first.longitude], {
-      radius: names.length > 1 ? 7 : 6, color: "#fffaf0", weight: 2,
-      fillColor: "#b99963", fillOpacity: .95, className: "person-track-node"
-    }).addTo(group);
-    ui.trackLabels.push({ marker, text: names.slice(0, 3).join(" · ") + (names.length > 3 ? ` +${names.length - 3}` : "") });
-    const evidence = rows[0];
-    marker.bindPopup(popupNode(
-      names.join("、"),
-      `${person?.canonical_name || "所选人物"} · ${rows.length} 条同段地名候选 · ${evidence.row.chapter_id} ${evidence.row.paragraph_id}`,
-      `历史地名志筛查坐标；MED ${evidence.med == null ? "未知" : `${Number(evidence.med).toFixed(2)} km`}。人物与地点在原文同段共现，尚未人工确认地点指代或实际到访。`,
-      () => jumpToParagraph(evidence.row.chapter_id, evidence.row.paragraph_id)
-    ));
-    markerByCoordinate.set(key, marker);
-    marker.on("click", () => {
-      ui.trackIndex = nodes.findIndex(node => `${node.longitude.toFixed(5)},${node.latitude.toFixed(5)}` === key);
-      updateTrackRecordControls();
-    });
-  }
-  $("track-map-title").textContent = `${person?.canonical_name || "人物"} · 叙事地点顺序`;
-  $("track-status").textContent = `${number(nodes.length)} 条同段候选 · ${number(byCoordinate.size)} 个地图点${lineCoordinates.length >= 2 ? ` · ${number(lineCoordinates.length)} 个顺序轨迹节点` : nodes.length === 1 ? " · 单点证据" : " · 无法连线"}`;
-  if (container) {
-    container.dataset.trackPersonId = personId || "";
-    container.dataset.trackNodeCount = String(nodes.length);
-    container.dataset.trackLocationCount = String(byCoordinate.size);
-    container.dataset.trackMarkerCount = String(byCoordinate.size);
-    container.dataset.trackLineCount = lineCoordinates.length >= 2 ? "1" : "0";
-  }
-  $("track-records").innerHTML = nodes.map((node,index) => {
-    const key = `${node.longitude.toFixed(5)},${node.latitude.toFixed(5)}`;
-    return `<div class="list-row" role="button" tabindex="0" aria-pressed="false" data-track-index="${index}" data-track-coordinate="${key}" data-chapter="${escapeHTML(node.row.chapter_id)}" data-paragraph="${escapeHTML(node.row.paragraph_id)}"><div class="list-row-title">${escapeHTML(node.row.historical_toponym)}<span class="record-chapter">第 ${node.row.chapter_order} 章</span></div><div class="list-row-meta" title="${escapeHTML(node.row.paragraph_id)}">${escapeHTML(node.person)} · MED ${node.med == null ? "未知" : Number(node.med).toFixed(1)+" km"}</div><div class="list-row-excerpt">${escapeHTML(paragraphText(node.row.paragraph_id).slice(0,160))}</div></div>`;
-  }).join("") || `<div class="empty-state">${person ? `${escapeHTML(person.canonical_name)} 当前没有符合历史地名志筛查条件的同段地点坐标。` : "请先选择人物。"} 仍可到原著阅读页检索人物名；这里不会用现代地点坐标冒充历史位置。</div>`;
-  $("track-records").querySelectorAll("[data-track-index]").forEach(node => {
-    const focusNode = () => {
-      focusTrackRecord(Number(node.dataset.trackIndex));
-    };
-    node.addEventListener("click", focusNode);
-    node.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); focusNode(); } });
-  });
-  ui.trackMarkers = markerByCoordinate;
-  updateTrackRecordControls();
-  ui.trackBounds = nodes.length ? L.latLngBounds(nodes.map(node => [node.latitude, node.longitude])) : null;
-  if (map && nodes.length) {
-    const bounds = L.latLngBounds(nodes.map(node => [node.latitude, node.longitude]));
-    setTimeout(() => {
-      map.invalidateSize();
-      if (bounds.isValid()) map.fitBounds(bounds, { padding: [36, 36], maxZoom: 5.6, animate: false });
-      refreshTrackLabels();
-    }, 80);
-  } else if (map) {
-    map.setView([35, 105], 3.7, { animate: false });
-    setTimeout(() => map.invalidateSize(), 40);
-  }
+  return nodes.map(node => ({...node, personId}));
 }
-function updateTrackRecordControls() {
-  const records = [...$("track-records").querySelectorAll("[data-track-index]")];
-  records.forEach((row, index) => { row.classList.toggle("active", index === ui.trackIndex); row.setAttribute("aria-pressed", String(index === ui.trackIndex)); });
-  $("track-prev-record").disabled = ui.trackIndex <= 0;
-  $("track-next-record").disabled = !records.length || ui.trackIndex >= records.length-1;
-  $("track-record-position").textContent = records.length ? `${ui.trackIndex < 0 ? "—" : ui.trackIndex+1} / ${records.length} 条地点证据` : "暂无可定位证据";
-}
-function focusTrackRecord(index) {
-  const records = [...$("track-records").querySelectorAll("[data-track-index]")];
-  const record = records[index], map = state.maps.tracks;
-  if (!record || !map) return;
-  const marker = ui.trackMarkers.get(record.dataset.trackCoordinate);
-  if (!marker) return;
-  ui.trackIndex = index; updateTrackRecordControls();
-  map.setView(marker.getLatLng(), Math.min(Math.max(map.getZoom(), 5.6),8), { animate:false });
-  marker.openPopup();
-  record.scrollIntoView({ block:"nearest", inline:"nearest" });
-}
+function drawTracks() { resetTrackPlayback(); }
 function refreshTrackLabels() {
   const map = state.maps.tracks;
   if (!map || !map.getContainer().clientWidth) return;
@@ -679,7 +588,7 @@ function refreshTrackLabels() {
     marker.unbindTooltip();
     if (!map.getBounds().contains(marker.getLatLng())) continue;
     const placement = findLabelPlacement(map, marker.getLatLng(), text, boxes);
-    if (placement) marker.bindTooltip(escapeHTML(text), {permanent:true,...placement,className:"historical-place-label",opacity:.98});
+    if (placement) bindHistoricalPlaceLabel(marker, text, placement, marker._placeNames || [text]);
   }
 }
 
@@ -700,7 +609,7 @@ function renderAnalysisMap() {
   if ($("analysis-events").checked) state.eventGeo.features.filter(row => row.properties.event_type_candidate === "war").forEach(feature => {
     const props = feature.properties;
     L.circleMarker([feature.geometry.coordinates[1],feature.geometry.coordinates[0]],{radius:4,color:"#fffaf0",weight:1,fillColor:"#b96f55",fillOpacity:.9})
-      .bindPopup(popupNode(`战争候选 · ${props.historical_toponym}`, `第 ${props.chapter_order} 章 · ${props.paragraph_id}`, props.source_excerpt, () => jumpToParagraph(props.chapter_id, props.paragraph_id))).addTo(group);
+      .bindPopup(popupNode(`战争候选 · ${props.historical_toponym}`, `第 ${props.chapter_order} 章 · ${props.paragraph_id}`, props.source_excerpt, () => jumpToParagraph(props.chapter_id, props.paragraph_id), [props.historical_toponym])).addTo(group);
   });
   $("kde-status").textContent = state.kdeGeo.features.length ? "已计算 · 历史含义待核验" : "暂无可显示的核密度";
   $("kde-status").title = state.analysis.kde.status;
@@ -769,7 +678,7 @@ function renderPlaces(filter = state.placeFilter) {
       if (row.geocode_status === "OK" && row.longitude != null) state.maps.overview.setView([row.latitude,row.longitude],6);
       selectPlace(row);
       if (window.matchMedia("(max-width: 1080px)").matches) $("selection-content").scrollIntoView({block:"center"});
-    } else toast("该地名超出当前 His-Geo 运行限额，未计算结果");
+    } else openPlaceProfile(node.dataset.place);
     };
     node.addEventListener("click", select);
     node.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); select(); } });
@@ -892,7 +801,10 @@ function bindControls() {
   for (const [id,delta] of [["reader-prev",-1],["reader-next",1]]) $(id).addEventListener("click",()=> {
     selectChapter(state.selectedChapter+delta); document.querySelector(".reader-toolbar").scrollIntoView({block:"start"});
   });
+  setupTrackControls();
+  setupMapAssistant();
   $("track-reset").addEventListener("click",()=> {
+    setTrackChapter(state.chapters.length);
     if (ui.trackBounds?.isValid()) state.maps.tracks.fitBounds(ui.trackBounds,{padding:[36,36],maxZoom:5.6,animate:false});
     refreshTrackLabels();
   });
@@ -918,7 +830,7 @@ function bindControls() {
   $("person-filter").addEventListener("change",()=> {renderChapterEvents();drawOverviewMap();});
   $("search-button").addEventListener("click",searchText);
   $("text-search").addEventListener("keydown",event=>{if(event.key==="Enter")searchText()});
-  $("track-person").addEventListener("change",drawTracks);
+  $("track-person").addEventListener("change",()=>{ trackPlayback.mode="single"; drawTracks(); });
   $("place-search").addEventListener("input",()=> {ui.placePage=1;renderPlaces();});
   document.querySelectorAll("[data-place-filter]").forEach(button=>button.addEventListener("click",()=>{
     ui.placePage=1; renderPlaces(button.dataset.placeFilter); $("place-table").scrollTop=0;

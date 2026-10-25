@@ -85,7 +85,7 @@ function renderQuickSearch() {
   host.querySelectorAll("[data-result-index]").forEach(button=>button.addEventListener("click",()=>{
     const action=actions[Number(button.dataset.resultIndex)];$("quick-search-dialog").close();
     if(action.type==="page")showPage(action.key);
-    if(action.type==="person"){showPage("people");$("track-person").value=action.key;drawTracks();}
+    if(action.type==="person"){showPage("people");$("track-person").value=action.key;trackPlayback.mode="single";drawTracks();}
     if(action.type==="chapter"){selectChapter(Number(action.key));showPage("reader");document.querySelector(".reader-toolbar").scrollIntoView({block:"start"});}
     if(action.type==="place")locateCockpitPlace(action.key);
   }));

@@ -130,6 +130,8 @@ def test_user_2024_admin_boundaries_keep_source_hashes_and_valid_display_geometr
     app = (ROOT / "frontend/app.js").read_text(encoding="utf-8")
     html = (ROOT / "frontend/index.html").read_text(encoding="utf-8")
     assert "GS（2024）0650号" in app
-    assert "historical_toponym" in app and "permanent:true" in app
+    label_module = (ROOT / "frontend/map-assistant.js").read_text(encoding="utf-8")
+    assert "historical_toponym" in app and "bindHistoricalPlaceLabel" in app
+    assert "permanent: true" in label_module and "interactive: true" in label_module
     assert all(f"/frontend/data/basemap/china_admin_2024/{level}.geojson" in app for level in expected_counts)
     assert all(control in html for control in ("chapter-play", "chapter-prev", "chapter-next", "place-label-toggle"))

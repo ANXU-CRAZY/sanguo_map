@@ -43,14 +43,14 @@ async function chapter(page, value) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
   page.setDefaultTimeout(15000);
   observe(page); await loaded(page);
-  await check('desktop: all seven pages, breadcrumb and active navigation', async () => {
-    for (const name of ['overview', 'reader', 'people', 'analysis', 'places', 'network', 'findings']) {
+  await check('desktop: all eight pages, breadcrumb and active navigation', async () => {
+    for (const name of ['overview', 'reader', 'people', 'analysis', 'places', 'network', 'findings', 'assistant']) {
       await go(page, name); await noOverflow(page);
       assert.equal(await page.locator(`.nav-item[data-page="${name}"]`).getAttribute('aria-current'), 'page');
       assert.ok((await page.locator('#current-page-label').textContent()).length > 0);
       await page.screenshot({ path: path.join(output, `desktop-${name}.png`) });
     }
-    return { pages: 7, viewport: '1440x1000' };
+    return { pages: 8, viewport: '1440x1000' };
   });
   await go(page, 'overview');
   await check('chapter navigation: boundaries, title, range and play/pause', async () => {
@@ -142,17 +142,18 @@ async function chapter(page, value) {
   });
   await require('./check_frontend_details.cjs')({page,check,go,chapter});
   await require('./check_cockpit.cjs').desktop({page,check,go,output});
-  await check('tablet: seven pages without document overflow', async () => {
+  await require('./check_track_assistant.cjs').desktop({page,check,go,output});
+  await check('tablet: eight pages without document overflow', async () => {
     // Compact visual layout remains a public UI contract across breakpoints.
     await page.setViewportSize({ width: 1024, height: 900 });
-    for (const name of ['overview','reader','people','analysis','places','network','findings']) { await go(page, name); await noOverflow(page); }
-    return { pages: 7, viewport: '1024x900' };
+    for (const name of ['overview','reader','people','analysis','places','network','findings','assistant']) { await go(page, name); await noOverflow(page); }
+    return { pages: 8, viewport: '1024x900' };
   });
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
   mobile.setDefaultTimeout(15000);
   observe(mobile); await loaded(mobile);
-  await check('mobile: seven pages, accessible navigation and no document overflow', async () => {
-    for (const name of ['overview','reader','people','analysis','places','network','findings']) {
+  await check('mobile: eight pages, accessible navigation and no document overflow', async () => {
+    for (const name of ['overview','reader','people','analysis','places','network','findings','assistant']) {
       await go(mobile, name, true); await noOverflow(mobile);
       assert.equal(await mobile.locator('#menu-toggle').getAttribute('aria-expanded'), 'false');
     }
@@ -160,16 +161,16 @@ async function chapter(page, value) {
     await mobile.screenshot({ path: path.join(output,'mobile-overview.png'), fullPage: true });
     await go(mobile, 'people', true);
     await mobile.screenshot({ path: path.join(output,'mobile-people.png'), fullPage: true });
-    return { pages: 7, viewport: '390x844' };
+    return { pages: 8, viewport: '390x844' };
   });
   await check('mobile menu closes with Escape', async () => {
     await mobile.locator('#menu-toggle').click(); assert.equal(await mobile.locator('#menu-toggle').getAttribute('aria-expanded'), 'true');
     await mobile.keyboard.press('Escape'); assert.equal(await mobile.locator('#menu-toggle').getAttribute('aria-expanded'), 'false');
   });
-  await check('small mobile: seven pages fit a 320px viewport',async()=>{
+  await check('small mobile: eight pages fit a 320px viewport',async()=>{
     await mobile.setViewportSize({width:320,height:740});
-    for(const name of ['overview','reader','people','analysis','places','network','findings']){await go(mobile,name,true);await noOverflow(mobile);}
-    await mobile.setViewportSize({width:390,height:844});return {pages:7,viewport:'320x740'};
+    for(const name of ['overview','reader','people','analysis','places','network','findings','assistant']){await go(mobile,name,true);await noOverflow(mobile);}
+    await mobile.setViewportSize({width:390,height:844});return {pages:8,viewport:'320x740'};
   });
   await check('mobile chapter speed, play and navigation controls do not overlap',async()=>{
     for(const width of [390,320]){
@@ -188,6 +189,7 @@ async function chapter(page, value) {
     assert.equal(await mobile.locator('#menu-toggle').getAttribute('aria-expanded'),'false');
   });
   await require('./check_cockpit.cjs').mobile({mobile,check,go,output});
+  await require('./check_track_assistant.cjs').mobile({mobile,check,go,output});
   await check('offline rendering has no JavaScript errors, failed HTTP responses or external requests', async () => {
     // Includes the command palette, both map themes and the mobile cockpit sheets.
     assert.deepEqual(report.errors, []); assert.deepEqual(report.failed_responses, []); assert.deepEqual(report.external_requests, []);
