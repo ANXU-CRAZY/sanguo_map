@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="/frontend/style.css?v=7">
   <link rel="stylesheet" href="/frontend/cockpit.css?v=7">
   <link rel="stylesheet" href="/frontend/interactions.css?v=7">
+  <link rel="stylesheet" href="/frontend/atlas-refinement.css?v=1">
 </head>
 <body>
   <a class="skip-link" href="#workspace-main">跳到主要内容</a>
@@ -51,12 +52,12 @@
       <button class="nav-item" data-page="assistant"><svg class="icon"><use href="#icon-search"/></svg><span>地图问答</span><small>08</small></button>
     </nav>
     <div class="sidebar-note"><svg class="icon"><use href="#icon-compass"/></svg><p>以文为据，以图见史。</p><span>在字里行间，发现叙事的山河。</span><a href="/docs/FINAL_PROJECT_REPORT.md" target="_blank" rel="noopener">了解数据与方法 <span aria-hidden="true">↗</span></a></div>
-    <div class="header-meta"><span class="live-dot"></span><div><span class="meta-key">本地工作空间</span><span id="load-status" role="status">正在读取本地数据…</span></div></div>
+    <div class="header-meta"><span class="live-dot"></span><div><span class="meta-key">站点数据</span><span id="load-status" role="status">正在载入站点数据…</span></div></div>
   </header>
 
   <div class="workspace-bar"><div class="workspace-breadcrumb"><span>三国演义</span><span aria-hidden="true">/</span><strong id="current-page-label">时空总览</strong></div><div class="workspace-meta"><span><svg class="icon"><use href="#icon-check"/></svg> 原文可溯</span><span class="workspace-offline"><span class="live-dot"></span>离线探索</span><a href="https://github.com/ANXU-CRAZY/sanguo_map" target="_blank" rel="noopener" aria-label="打开项目 GitHub 仓库">GitHub ↗</a></div></div>
   <main id="workspace-main" tabindex="-1">
-    <div id="app-loading" class="loading-banner" role="status"><span class="loading-spinner" aria-hidden="true"></span><div><strong>正在展开这卷山河</strong><span id="loading-message">正在读取本地原文、地名与地图图层…</span></div><button id="load-retry" class="secondary-button" hidden>重新加载</button></div>
+    <div id="app-loading" class="loading-banner" role="status"><span class="loading-spinner" aria-hidden="true"></span><div><strong>正在展开这卷山河</strong><span id="loading-message">正在载入内置原文、地名与地图图层…</span></div><button id="load-retry" class="secondary-button" hidden>重新加载</button></div>
     <section class="page active" id="page-overview">
       <div class="page-heading">
         <div><p class="eyebrow"><span class="eyebrow-line"></span> A LITERARY ATLAS OF THE THREE KINGDOMS</p><h1>在字里行间，遇见三国<span class="heading-period">。</span></h1><p class="lede">以原文章节为线索，探索人物、地名与事件的空间关联。</p></div>
@@ -142,7 +143,7 @@
   <div id="toast" role="status" aria-live="polite"></div>
   <button id="back-top" class="back-top" aria-label="返回页面顶部" title="返回顶部" hidden>↑</button>
   <script src="/frontend/assets/vendor/leaflet.js"></script>
-  <script src="/frontend/app.js?v=7"></script>
+  <script src="/frontend/app.js?v=8"></script>
   <script src="/frontend/tracks.js?v=7"></script>
   <script src="/frontend/map-assistant.js?v=7"></script>
   <script src="/frontend/cockpit.js?v=7"></script>

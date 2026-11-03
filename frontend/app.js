@@ -34,7 +34,33 @@ function paragraphOrder(event) { return event.narrative_order || event.chapter_o
 function findChapter(id) { return state.chapters.find(row => row.chapter_id === id); }
 function geocodeByName(name) { return state.geocodeIndex?.get(name) || state.geocodes.find(row => row.historical_toponym === name); }
 
-async function loadData() {
+async function optionalJson(url) {
+  const response = await fetch(url);
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`);
+  return response.json();
+}
+
+async function bundledData() {
+  const base = "/data/";
+  const [core, events, mentions, geocoding, admin, county, world] = await Promise.all([
+    optionalJson(base + "core.json"), optionalJson(base + "events.json"), optionalJson(base + "mentions.json"),
+    optionalJson(base + "geocodes.json"), optionalJson(base + "basemap-admin.json"),
+    optionalJson(base + "basemap-county.json"), optionalJson(base + "basemap-world.json")
+  ]);
+  if (!core) return null;
+  if (!events || !mentions || !geocoding || !admin || !county || !world) throw new Error("站点数据分片不完整");
+  return {
+    chapters: core.chapters, people: core.people, personMentions: mentions.characterMentions,
+    placeMentions: mentions.placeMentions, places: core.places, events: events.events, times: core.times,
+    geocodes: geocoding.geocodes, build: core.build, analysis: core.analysis, eventGeo: core.eventGeo,
+    bufferGeo: core.bufferGeo, kdeGeo: events.kdeGeo, trackGeo: core.trackGeo,
+    countries: world.countries, rivers: world.rivers, lakes: world.lakes,
+    adminProvince: admin.adminProvince, adminCity: admin.adminCity, adminCounty: county.adminCounty
+  };
+}
+
+async function legacyData() {
   const base = "/data/";
   const [chapters, people, personMentions, placeMentions, places, events, times, geocodes, build, analysis, eventGeo, bufferGeo, kdeGeo, trackGeo, countries, rivers, lakes, adminProvince, adminCity, adminCounty] = await Promise.all([
     json(base + "processed/chapters.json"), json(base + "extracted/characters.json"),
@@ -50,16 +76,27 @@ async function loadData() {
     json("/frontend/data/basemap/china_admin_2024/city.geojson"),
     json("/frontend/data/basemap/china_admin_2024/county.geojson")
   ]);
-  Object.assign(state, { chapters, people, peopleMentions: personMentions, placeMentions, places, events, times, geocodes, build, analysis, eventGeo, bufferGeo, kdeGeo, trackGeo, basemap: { countries, rivers, lakes, adminProvince, adminCity, adminCounty } });
+  return { chapters, people, personMentions, placeMentions, places, events, times, geocodes, build, analysis, eventGeo, bufferGeo, kdeGeo, trackGeo, countries, rivers, lakes, adminProvince, adminCity, adminCounty };
+}
+
+async function loadData() {
+  const data = (await bundledData()) || (await legacyData());
+  Object.assign(state, {
+    chapters: data.chapters, people: data.people, peopleMentions: data.personMentions,
+    placeMentions: data.placeMentions, places: data.places, events: data.events, times: data.times,
+    geocodes: data.geocodes, build: data.build, analysis: data.analysis, eventGeo: data.eventGeo,
+    bufferGeo: data.bufferGeo, kdeGeo: data.kdeGeo, trackGeo: data.trackGeo,
+    basemap: { countries: data.countries, rivers: data.rivers, lakes: data.lakes, adminProvince: data.adminProvince, adminCity: data.adminCity, adminCounty: data.adminCounty }
+  });
   state.paragraphTexts = new Map();
-  state.geocodeIndex = new Map(geocodes.map(row => [row.historical_toponym,row]));
-  for (const chapter of chapters) chapter.body.split(/\n[\t ]*\n+/).filter(text => text.length).forEach((text, index) => {
+  state.geocodeIndex = new Map(data.geocodes.map(row => [row.historical_toponym,row]));
+  for (const chapter of data.chapters) chapter.body.split(/\n[\t ]*\n+/).filter(text => text.length).forEach((text, index) => {
     state.paragraphTexts.set(`${chapter.chapter_id}_p_${String(index + 1).padStart(4,"0")}`, text);
   });
-  for (const row of placeMentions) { if (!state.placeMentionsByParagraph.has(row.paragraph_id)) state.placeMentionsByParagraph.set(row.paragraph_id, []); state.placeMentionsByParagraph.get(row.paragraph_id).push(row); }
-  for (const row of personMentions) { if (!state.peopleMentionsByParagraph.has(row.paragraph_id)) state.peopleMentionsByParagraph.set(row.paragraph_id, []); state.peopleMentionsByParagraph.get(row.paragraph_id).push(row); }
-  $("load-status").textContent = "本地数据已载入";
-  $("reader-chapter-count").textContent = `${chapters.length} 章`;
+  for (const row of data.placeMentions) { if (!state.placeMentionsByParagraph.has(row.paragraph_id)) state.placeMentionsByParagraph.set(row.paragraph_id, []); state.placeMentionsByParagraph.get(row.paragraph_id).push(row); }
+  for (const row of data.personMentions) { if (!state.peopleMentionsByParagraph.has(row.paragraph_id)) state.peopleMentionsByParagraph.set(row.paragraph_id, []); state.peopleMentionsByParagraph.get(row.paragraph_id).push(row); }
+  $("load-status").textContent = "站点数据已载入";
+  $("reader-chapter-count").textContent = `${data.chapters.length} 章`;
 }
 
 function setupNavigation() {
@@ -197,7 +234,6 @@ function setupMaps() {
   state.maps.overview.on("moveend", drawOverviewMap);
   state.maps.tracks.on("moveend", refreshTrackLabels);
   drawOverviewMap();
-  renderAnalysisMap();
 }
 
 function metricCard(label, value, note, symbol) {
@@ -852,17 +888,16 @@ async function main() {
     bindControls();
     const initial=location.hash.slice(1);
     showPage(PAGE_LABELS[initial] ? initial : "overview", false);
-    drawTracks(); drawNetwork();
     if (state.chapters.length !== 119) throw new Error(`Expected 119 chapters, loaded ${state.chapters.length}`);
     $("app-loading").hidden = true;
     if (typeof cockpitReady === "function") cockpitReady();
   } catch (error) {
     console.error(error);
-    $("load-status").textContent = "本地数据读取失败";
+    $("load-status").textContent = "站点数据加载失败";
     $("load-status").style.color = "#d27761";
     $("app-loading").classList.add("load-error");
-    $("app-loading").querySelector("strong").textContent="本地数据暂未载入";
-    $("loading-message").textContent="请确认本地服务仍在运行，然后重新加载。";
+    $("app-loading").querySelector("strong").textContent="站点数据暂未载入";
+    $("loading-message").textContent="请刷新页面重试；本地预览时请确认本地服务仍在运行。";
     $("load-retry").hidden=false;
     toast(`数据加载失败：${error.message}`);
   }

@@ -1,0 +1,78 @@
+/* Design refinement informed by unslop, Damir Sokolovsky, CC BY 4.0.
+   https://github.com/heydamir/unslop */
+/* Shared reading rhythm: the map, text, and evidence carry the emphasis. */
+:root{--atlas-rule:var(--line);--atlas-space:24px}
+main{padding:32px clamp(20px,2.4vw,40px) 48px}
+.page-heading{margin-bottom:24px}
+.page-heading h1{font-weight:500;line-height:1.35;letter-spacing:.03em}
+.page-heading .lede{max-width:70ch;font-size:14px;line-height:1.8}
+.page-heading .eyebrow,.panel-head .eyebrow,.assistant-suggestions .eyebrow,.track-player-heading .eyebrow{font-size:10px;letter-spacing:.02em;line-height:1.6}
+.panel{box-shadow:none;border-radius:8px}
+.panel-head{padding:20px 24px;gap:16px}
+.panel-head h2{font-size:17px;font-weight:500}
+.panel-head p:not(.eyebrow){font-size:12px;line-height:1.6}
+.caption{font-size:12px;line-height:1.8}
+.icon{stroke-width:1.5}
+.list-row{padding:12px 8px;border-radius:4px}
+.list-row-title{font-size:13px}.list-row-meta{font-size:11px;gap:8px}.list-row-excerpt{font-size:12px;line-height:1.7}
+.pill,.status-tag,.event-type{box-shadow:none;font-weight:400}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex="0"]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* The reader has a compact directory and a generous text measure. */
+.reader-layout{gap:24px}
+.chapter-list{padding:0 12px 16px}
+.chapter-item{padding:12px;font-size:12px;line-height:1.6}
+.chapter-item span{font-size:11px;font-variant-numeric:tabular-nums}
+.reader-toolbar{padding:24px;gap:16px}
+.reader-title-group h2{font-weight:500;line-height:1.5}
+.reader-text{max-width:880px;line-height:2.15;padding:32px clamp(24px,4vw,64px) 56px}
+.reading-settings{gap:12px}
+
+/* Tracks share a chapter clock; the evidence list is the companion column. */
+.people-toolbar{padding:16px 20px;gap:12px;margin-bottom:20px}
+.people-grid,.analysis-grid{gap:20px}
+.track-player{padding:20px 24px 16px}
+.track-player-heading strong{font-size:15px}
+#track-chapter-title{font-size:12px;line-height:1.6}
+.track-play-controls{gap:8px}
+.track-legend{gap:8px;padding:16px 24px;background:var(--surface)}
+.track-person-card{padding:12px;line-height:1.6}
+.track-person-card p{font-size:12px}
+.track-person-card small,.track-person-card .text-button{font-size:11px}
+
+/* Tables, analytical views, and the network retain their original evidence. */
+.analysis-table-panel,.place-explorer{margin-top:20px}
+.place-row{gap:16px;padding:16px 24px;font-size:12px}
+.place-row.header{font-size:11px}
+.table-summary,.table-pagination{padding-left:24px;padding-right:24px}
+.network-layout{gap:20px}
+.graph-guide,.graph-legend{font-size:12px}
+.finding-card{box-shadow:none}
+.finding-columns{gap:24px}
+
+/* Questions are grounded in the text, with evidence easy to scan and open. */
+.assistant-layout{grid-template-columns:minmax(0,1fr) 300px;gap:20px}
+.assistant-messages{padding:8px 24px 20px}
+.assistant-answer,.assistant-question{padding:16px 20px;font-size:14px;line-height:1.8}
+.assistant-answer h3{font:500 17px/1.5 var(--serif)}
+.answer-method{font-size:11px}
+.assistant-suggestions{padding:24px}
+.assistant-suggestions>button{padding:12px;font-size:13px;line-height:1.5}
+.source-evidence{padding:12px 16px}.source-evidence>span,.source-evidence small{font-size:11px}
+.source-evidence p{font-size:14px;line-height:1.8}
+#assistant-form{padding:20px 24px}
+#assistant-input{font-size:14px}
+.place-profile h3{font-weight:500}.profile-intro{font-size:14px;line-height:1.8}
+
+@media(max-width:1050px){.assistant-layout{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:780px){
+ main{padding:20px 16px 32px}
+ .page-heading{margin-bottom:20px}.page-heading h1{font-size:26px}.page-heading .lede{font-size:13px}
+ .panel-head{padding:16px}.reader-layout,.people-grid,.analysis-grid,.network-layout{gap:16px}
+ .reader-toolbar{padding:16px}.reader-text{padding:24px 20px 40px;line-height:2}
+ .track-player{padding:16px}.track-legend{padding:12px 16px 16px}
+ .assistant-messages{padding:8px 16px 16px}.assistant-answer,.assistant-question{padding:14px;font-size:13px}
+ #assistant-form,.assistant-suggestions{padding:16px}
+ .place-row{padding:14px 16px}.table-summary,.table-pagination{padding-left:16px;padding-right:16px}
+}
+@media(prefers-reduced-motion:reduce){.track-head{animation:none}}

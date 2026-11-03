@@ -17,6 +17,8 @@ $py = 'F:\history_sites\hisgeo_reproduction\.venv-final\Scripts\python.exe'
 
 浏览器打开 <http://127.0.0.1:8765/>。`build_project.py` 全程离线，会核验原文与 His-Geo 版本、生成结构化文本、确定性抽取、单独的 His-Geo 评价记录、SQLite、GeoJSON / GeoPackage 和分析汇总。它不会调用 LLM、外部地图瓦片或任何 API。
 
+部署静态站时，用 `node scripts/build_static_site.mjs` 生成 `dist/`：前端资源与全部页面数据打包为 7 个内置 JSON 分片。为保护已有结果，输出目录必须不存在；也可以用 `node scripts/build_static_site.mjs --out <新目录>` 指定新的输出目录。
+
 如 His-Geo 仓库路径改变，编辑 `configs/project.json` 的本地路径；代码会拒绝使用非预期的 His-Geo commit 或有改动的工作树。原文、His-Geo 及参考项目均不由本项目脚本写入。
 
 ## 数据解释

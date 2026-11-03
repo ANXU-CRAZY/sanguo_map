@@ -8,3 +8,4 @@ data/gazetteers/cache/
 .venv/
 .venv-*/
 outputs/logs/*.log
+dist/

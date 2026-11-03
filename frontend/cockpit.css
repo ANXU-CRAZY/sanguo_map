@@ -138,3 +138,32 @@ body.is-cockpit{overflow:hidden}body.is-cockpit main{padding:0;min-height:0}body
 }
 @media(max-width:360px){.cockpit-heading h1{font-size:20px}.cockpit-heading .eyebrow{font-size:6px}.cockpit-map-actions{max-width:74px;gap:5px}.cockpit-map-actions .icon-button{width:29px;height:29px}.cockpit-world .detail-panel>.panel-head .eyebrow{font-size:6px}.cockpit-world .timeline-control{padding:15px}.dock-display{padding:14px 15px}.workspace-breadcrumb{font-size:10px}.quick-search-footer>span:first-child{max-width:180px}}
 @media(prefers-reduced-motion:reduce){.cockpit-world *,.quick-search-dialog *{animation:none!important;transition:none!important}}
+/* Interface refinement inspired by unslop, Damir Sokolovsky (CC BY 4.0):
+   https://github.com/heydamir/unslop — the map remains the visual focus. */
+.page-heading .eyebrow,.panel-head .eyebrow,.cockpit-heading .eyebrow,.cockpit-panel-head small,.cockpit-section-label>span,.quick-search-head .eyebrow{letter-spacing:.02em}
+.cockpit-heading h1{letter-spacing:.04em;text-shadow:none}
+.cockpit-heading h1>span{letter-spacing:0;font-size:11px}
+.cockpit-panel-head{padding:12px 16px}
+.cockpit-panel-head>span{font-size:13px;font-weight:500}
+.cockpit-panel-head small{font-size:10px;letter-spacing:0}
+#scene-panel-body{padding:16px}
+.cockpit-world .stat-grid{gap:8px}
+.cockpit-world .stat-card{border-radius:4px;box-shadow:none}
+.cockpit-world .stat-card>span{font-size:11px}
+.cockpit-world .stat-card strong,.track-person-card strong span,.profile-stats strong{font-variant-numeric:tabular-nums}
+.cockpit-world .detail-panel .eyebrow{font-size:10px;letter-spacing:0}
+.cockpit-world .timeline-chapter-title{font-size:11px}
+.cockpit-world .timeline-ends,.cockpit-world .map-dynamic-status{font-size:10px;opacity:1}
+.cockpit-world .timeline-actions{gap:8px}
+.cockpit-world .timeline-actions button,.cockpit-world .timeline-actions select{height:36px}
+.cockpit-world .timeline-actions .chapter-play{font-size:12px}
+.scene-provenance{font-size:10px;opacity:1}
+.nav-item.active{box-shadow:none}
+.track-head.is-current{animation:none}
+@media(max-width:780px){
+ .cockpit-heading .eyebrow{font-size:10px;letter-spacing:0}
+ .cockpit-heading h1{letter-spacing:.04em}
+ .cockpit-world .detail-panel>.panel-head .eyebrow{font-size:10px}
+ .cockpit-world .timeline-actions button,.cockpit-world .timeline-actions select{height:40px}
+ .cockpit-world .timeline-actions .chapter-play{height:40px}
+}
